@@ -1,0 +1,39 @@
+.register_panel{
+    width: 20%;
+    height: 40%;
+    box-shadow: 0 0 5px #66666666;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.register_title{
+    font-size: 30px;
+    margin-left: 5%;
+}
+
+.register_input{
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    width: 90%;
+    height: 30px;
+    margin-left: 5%;
+    margin-top: 1%;
+    margin-bottom: 2%;
+}
+
+.register_submit{
+    border-color: #d9d9d9;
+    border-radius: 5px;
+    border-width: 0;
+    color: white;
+    background: #2db55d;
+    width: 92%;
+    height: 32px;
+    margin-left: 5%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}

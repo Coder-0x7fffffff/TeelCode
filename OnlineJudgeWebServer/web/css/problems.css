@@ -1,0 +1,27 @@
+.main_detail{
+    width: 100%;
+}
+
+.code_panel{
+    width: 100%;
+}
+
+.question_container{
+    width: 49.5%;
+    height: 100%;
+    display: inline-block;
+    float: left;
+}
+
+.code_container{
+    width: 49.5%;
+    height: 100%;
+    display: inline-block;
+    float: right;
+}
+
+.vertical_gap{
+    height: 100%;
+    border-left: 1px solid #000;
+    display: inline-block;
+}

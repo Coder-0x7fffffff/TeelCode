@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title><%=title%></title>
+    <%-CSSList%>
+</head>
+<body>
+    <div id="app">
+        <%-pageHeader%>
+        <div id="page_body" class="page_body">
+            <div id="body_detail" class="main_detail">
+                <div class="filter_panel">
+                    <input type="text" class="search_input" placeholder="输入题号、或名称以搜索题目">
+                    <div class="filter_panel_right">
+                        <select class="filter_select">
+                            <option>难度</option>
+                            <option>难度1</option>
+                            <option>难度2</option>
+                            <option>难度3</option>
+                        </select>
+                        <select class="filter_select">
+                            <option>分类</option>
+                            <option>DP</option>
+                            <option>搜索</option>
+                        </select>
+                        <select class="filter_select">
+                            <option>完成状态</option>
+                            <option>完成</option>
+                            <option>未完成</option>
+                        </select>
+                    </div>
+                </div>
+                <hr class="gap_hr"/>
+                <div class="question_list">
+                    <table id="question_table" class="question_table">
+                        <tr class="table_title">
+                            <th class="table_head">编号</th>
+                            <th class="table_head text_align_left">题目</th>
+                            <th class="table_head">难度</th>
+                            <th class="table_head">通过率</th>
+                            <th class="table_head">状态</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <%-pageBottom%>
+        <%-errorDialog%>
+    </div>
+</body>
+<%-scriptList%>
+</html>
