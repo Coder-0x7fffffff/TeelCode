@@ -5,9 +5,11 @@ const bodyParser = require("body-parser")
 const server = express()
 //server contact
 function getUserInfo(oldToken){
+    let img = null
     let online=false
     let userName=null
     let token=null
+    let err=null
     //get user info
     if(oldToken === "123456789"){
         online=true
@@ -15,10 +17,11 @@ function getUserInfo(oldToken){
         token="123456789"
     }
     //return
-    return {online:online,username:userName, token: token}
+    return {online:online, username:userName, token: token, img:img, err:err}
 }
 
 function login(username, password){
+    let img=null
     let online=false
     let userName=username
     let token=null
@@ -30,7 +33,7 @@ function login(username, password){
         err=null
     }else err="请输入正确的账号密码"
     //return
-    return {online:online, username:userName, token: token, err:err}
+    return {online:online, username:userName, token: token, img:img, err:err}
 }
 
 function register(username, password, question, answer){
@@ -59,7 +62,7 @@ function getPageHeader(user){
     if(!online){
         userPanel = '<div class="list_item_right"><a href="/register" class="list_item_text">注册</a></div><div class="list_item_right"><a href="/login" class="list_item_text">登录</a></div>'
     }else{
-        userPanel = '<div class="list_item_right"><button class="logout_bnt" id="logout_bnt">退出</button></div><div class="list_item_right"><a href="/userinfo" class="list_item_text">'+userName+'</a></div>'
+        userPanel = '<div class="list_item_right"><button class="logout_bnt" id="logout_bnt">退出</button></div><div class="list_item_right"><a href="/userinfo" ><img class="list_item_icon" src="./img/defaut_img.jpg"/></a></div>'
     }
     //execute header
     return '' +
@@ -73,7 +76,7 @@ function getPageHeader(user){
         '            <nav id="user_panel" class="nav_list_right">' + userPanel + '</nav>\n' +
         '        </div>\n' +
         '    </div>\n' +
-        '    <hr class="gap_hr">'
+        '    <hr id="gap_hr" class="gap_hr">'
 }
 
 function getScriptList(paths){
@@ -113,12 +116,15 @@ function getErrorDialog(){
 }
 
 function getPageFrame(user, scriptPaths, CSSPaths, extendOpts){
+    let opts = {pageHeader:getPageHeader(user), pageBottom:getPageBottom(), scriptList:getScriptList(scriptPaths), CSSList:getCSSList(CSSPaths), errorDialog:getErrorDialog()}
     let title = "TeelCode - 在线评测系统"
     if(!(extendOpts === undefined)){
-        if("title" in extendOpts)
-            title = extendOpts['title']
+        if(!("title" in extendOpts))
+            extendOpts['title'] = title
+        for(k in extendOpts)
+            opts[k] = extendOpts[k]
     }
-    return {title:title, pageHeader:getPageHeader(user), pageBottom:getPageBottom(), scriptList:getScriptList(scriptPaths), CSSList:getCSSList(CSSPaths), errorDialog:getErrorDialog()}
+    return opts
 }
 
 function start(port){
@@ -173,9 +179,23 @@ function start(port){
         let qid = parseInt(urls[urls.length-1])
         let title = qid.toString()
         //get question detail
-        let question = {}
+        let question = {title:"abc"}
         //return
-        let opts = getPageFrame(user, ['./js/problems.js'], ['./css/problems.css'],{title:title, question:question})
+        let scripts = [
+            './js/codemirror/lib/codemirror.js',
+            './js/codemirror/mode/clike/clike.js',
+            './js/codemirror/mode/python/python.js',
+            './js/codemirror/addon/hint/show-hint.js',
+            './js/codemirror/addon/hint/anyword-hint.js',
+            './js/markdown-browser/markdown.js',
+            './js/problems.js'
+        ]
+        let csss = [
+            './js/codemirror/lib/codemirror.css',
+            './js/codemirror/addon/hint/show-hint.css',
+            './css/problems.css'
+        ]
+        let opts = getPageFrame(user, scripts, csss,{title:title})
         res.render(__dirname+"/web/problems.ejs",opts)
     })
     //post

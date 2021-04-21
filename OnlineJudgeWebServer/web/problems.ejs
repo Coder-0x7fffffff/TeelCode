@@ -8,11 +8,29 @@
 <body>
 <div id="app">
     <%-pageHeader%>
-    <div id="code_panel" class="code_panel">
-        <div id="question_container" class="question_container"><p>question</p></div>
+    <div id="main_panel" class="main_panel">
+        <div id="question_container" class="question_container">
+            <ul id="tab_panel" class="tab_panel">
+                <li id="tab_panel_opt_question" class="tab_panel_opt">描述</li>
+                <li id="tab_panel_opt_comments" class="tab_panel_opt">交流</li>
+            </ul>
+            <div id="question_detail" class="tab_detail"></div>
+            <div id="comments_detail" class="tab_detail"></div>
+        </div>
         <div id="vertical_gap" class="vertical_gap"></div>
-        <div id="code_container" class="code_container"></div>
+        <div id="code_frame" class="code_frame">
+            <div id="code_control_panel" class="code_control_panel">
+                <select id="language_select" class="language_select"></select>
+                <button id="submit_bnt" class="code_bnt">提交</button>
+                <button id="run_bnt" class="code_bnt">执行代码</button>
+            </div>
+            <div id="code_container" class="code_container"></div>
+        </div>
     </div>
+    <dialog id="output_dialog" class="output_dialog">
+        <textarea id="output_msg" class="output_msg" readonly="readonly">output</textarea>
+        <button id="output_bnt" class="output_bnt">确定</button>
+    </dialog>
     <%-errorDialog%>
 </div>
 </body>

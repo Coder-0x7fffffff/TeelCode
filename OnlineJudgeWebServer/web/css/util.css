@@ -1,3 +1,4 @@
+/*main frame*/
 body{
     margin: 0 auto;
     background: white;
@@ -13,15 +14,61 @@ body{
     left: 0;
     right: 0;
 }
-
+/*button*/
 button{
     border-color: #d9d9d9;
     border-radius: 5px;
     border-width: 0;
     color: white;
     background: #2db55d;
+    outline: none;
 }
 
+button:hover{
+    background: #24924b;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s linear;
+    -o-transition: all 0.3s linear;
+    transition: all 0.3s linear;
+}
+
+button:active{
+    background: #1c6f39;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s linear;
+    -o-transition: all 0.3s linear;
+    transition: all 0.3s linear;
+}
+
+/*scrollbar interface*/
+::-webkit-scrollbar{
+    width: 10px;
+    height: 10px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb{
+    border-radius: 5px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+    background-color: #c8c8c8;
+}
+
+/*select*/
+select{
+    border-color: #d9d9d9;
+    border-radius: 5px;
+    outline: none;
+}
+
+/*page interface*/
 .page_header{
     width: 100%;
     background: white;
@@ -47,6 +94,7 @@ button{
 .list_item_icon{
     height: 25px;
     vertical-align: middle;
+    border-radius: 100%;
 }
 
 .list_item{
@@ -87,6 +135,7 @@ button{
     opacity: 0;
 }
 
+/*error dialog*/
 .err_dialog{
     border-radius: 5px;
     border-width: 0;

@@ -1,27 +1,130 @@
+body{
+    background: #f7f7f7;
+}
+.gap_hr{
+    opacity: 0;
+    margin: 0 0 4px 0;
+}
+
 .main_detail{
     width: 100%;
 }
 
-.code_panel{
+.main_panel{
     width: 100%;
+    margin: 0;
+    text-align: center;
 }
 
 .question_container{
     width: 49.5%;
     height: 100%;
     display: inline-block;
-    float: left;
+    margin: 0;
+    text-align: left;
 }
 
-.code_container{
+.tab_panel{
+    width: 100%;
+    height: 4%;
+    float: left;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tab_panel_opt{
+    list-style: none;
+    width: 10%;
+    height: 100%;
+    float: left;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    border-left: 2px solid #f7f7f7;
+    border-right: 2px solid #f7f7f7;
+    border-top: 2px solid #f7f7f7;
+    background: #f7f7f7;
+    user-select: none;
+    cursor: pointer;
+}
+
+.tab_detail{
+    float: left;
+    height: 96%;
+    width: 100%;
+    overflow: auto;
+    display: none;
+    background: white;
+}
+
+/* code */
+.code_frame{
     width: 49.5%;
     height: 100%;
     display: inline-block;
-    float: right;
+    margin: 0;
+    text-align: left
+}
+
+.code_container{
+    height: 96%;
 }
 
 .vertical_gap{
     height: 100%;
-    border-left: 1px solid #000;
+    border-right: 1px solid #dddddd;
     display: inline-block;
+    margin: 0;
+}
+
+.code_control_panel{
+    height: 4%;
+}
+
+.language_select{
+    height: 80%;
+    width: 10%;
+}
+
+.code_bnt{
+    height: 80%;
+    width: 10%;
+    float: right;
+    margin-left: 5px;
+}
+
+
+.output_dialog{
+    border-radius: 5px;
+    border-width: 0;
+    width: 40%;
+    height: 40%;
+    box-shadow: 0 0 5px #66666666;
+}
+
+.output_msg{
+    width: 98%;
+    height: 90%;
+    margin-left: 1%;
+    text-align: left;
+    resize: none;
+    outline: none;
+}
+
+.output_bnt{
+    width: 99%;
+    margin-left: 1%;
+    height: 28px;
+}
+
+/* code mirror editor */
+.CodeMirror{
+    font-size: 18px;
+    border: 1px solid #f7f7f7;
+}
+
+.CodeMirror-gutters{
+    background: #f7f7f7;
+    border-right: 1px solid #f7f7f7;
 }
