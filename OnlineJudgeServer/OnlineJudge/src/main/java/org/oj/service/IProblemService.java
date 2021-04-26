@@ -19,4 +19,6 @@ public interface IProblemService {
 	
 	public Classification getClassification(String name) throws SQLException;
 	
+	public List<Classification> getClassifications() throws SQLException;
+	
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -12,24 +13,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.oj.common.Global;
-import org.oj.service.ILoginService;
-import org.oj.service.impl.LoginServiceImpl;
-import org.oj.util.WebUtil;
+import org.oj.entity.Classification;
+import org.oj.service.IProblemService;
+import org.oj.service.impl.ProblemServiceImpl;
 
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class Login
+ * Servlet implementation class GetClassifications
  */
-@WebServlet("/Login")
-public class Login extends HttpServlet {
+@WebServlet("/GetClassifications")
+public class GetClassifications extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Login() {
+    public GetClassifications() {
         super();
     }
 
@@ -37,25 +37,18 @@ public class Login extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String id = WebUtil.decode(request.getParameter("id"));
-		String pwd = WebUtil.decode(request.getParameter("pwd"));
-		ILoginService loginService = new LoginServiceImpl();
+		IProblemService problemService = new ProblemServiceImpl();
 		try {
-			boolean result = loginService.login(id, pwd);
+			List<Classification> classificationList = problemService.getClassifications();
 			response.setContentType("text/json; charset=utf-8");
 	        PrintWriter out = response.getWriter();
 	        Map<String, Object> jsonMap = new HashMap<String, Object>();
-	        jsonMap.put("result", result);
-	        String token = null;
-	        if (result) {
-	        	token = Global.getOrCreateToken(id).token;
-	        }
-	        jsonMap.put("token", token);
+	        jsonMap.put("result", classificationList);
 	        String json = JSON.toJSONString(jsonMap);
 	        out.print(json);
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	/**

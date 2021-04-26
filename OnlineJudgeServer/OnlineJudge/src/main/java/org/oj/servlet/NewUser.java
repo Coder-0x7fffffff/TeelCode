@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.common.Global;
 import org.oj.service.INewUserService;
 import org.oj.service.impl.NewUserServiceImpl;
 import org.oj.util.WebUtil;
@@ -36,25 +37,29 @@ public class NewUser extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String id = WebUtil.decode(request.getParameter("id"));
-		String name = WebUtil.decode(request.getParameter("name"));
-		int sex = -1;
-		String psex = request.getParameter("sex");
-		if (null != psex) {
-			sex = Integer.parseInt(psex);
-		}
-		String dscp = request.getParameter("dscp");
-		INewUserService newUserService = new NewUserServiceImpl();
-		try {
-			boolean result = newUserService.newUser(id, name, sex, dscp);
-			response.setContentType("text/json; charset=utf-8");
-	        PrintWriter out = response.getWriter();
-	        Map<String, Object> jsonMap = new HashMap<String, Object>();
-	        jsonMap.put("result", result);
-	        String json = JSON.toJSONString(jsonMap);
-	        out.print(json);
-		} catch (SQLException e) {
-			e.printStackTrace();
+		String token = WebUtil.getToken(request);
+		if (Global.verifyToken(token)) {
+			String name = WebUtil.decode(request.getParameter("name"));
+			int sex = -1;
+			String psex = request.getParameter("sex");
+			if (null != psex) {
+				sex = Integer.parseInt(psex);
+			}
+			String dscp = request.getParameter("dscp");
+			INewUserService newUserService = new NewUserServiceImpl();
+			try {
+				boolean result = newUserService.newUser(Global.getToken(token).uid, name, sex, dscp);
+				response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        Map<String, Object> jsonMap = new HashMap<String, Object>();
+		        jsonMap.put("result", result);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/* reject this request */
 		}
 	}
 

@@ -13,23 +13,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
-import org.oj.service.IUpdateUserService;
-import org.oj.service.impl.UpdateUserServiceImpl;
+import org.oj.service.IAlterPasswordService;
+import org.oj.service.impl.AlterPasswordServiceImpl;
 import org.oj.util.WebUtil;
 
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class UpdateUser
+ * Servlet implementation class AlterPassword
  */
-@WebServlet("/UpdateUser")
-public class UpdateUser extends HttpServlet {
+@WebServlet("/AlterPassword")
+public class AlterPassword extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public UpdateUser() {
+    public AlterPassword() {
         super();
     }
 
@@ -39,16 +39,13 @@ public class UpdateUser extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String token = WebUtil.getToken(request);
 		if (Global.verifyToken(token)) {
-			String name = WebUtil.decode(request.getParameter("name"));
-			int sex = -1;
-			String psex = request.getParameter("sex");
-			if (null != psex) {
-				sex = Integer.parseInt(psex);
-			}
-			String dscp = request.getParameter("dscp");
-			IUpdateUserService updateUserService = new UpdateUserServiceImpl();
+			String uid = Global.getToken(token).uid;
+			String answer = WebUtil.decode(request.getParameter("answer"));
+			String newpwd = WebUtil.decode(request.getParameter("newpwd"));
+			IAlterPasswordService alterPasswordService = new AlterPasswordServiceImpl();
 			try {
-				boolean result = updateUserService.updateUser(Global.getToken(token).uid, name, sex, dscp);
+				boolean result = alterPasswordService.verify(uid, answer) &&
+						alterPasswordService.alter(uid, newpwd);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
 		        Map<String, Object> jsonMap = new HashMap<String, Object>();
@@ -57,9 +54,9 @@ public class UpdateUser extends HttpServlet {
 		        out.print(json);
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
+			} 
 		} else {
-			/* reject this request */
+			
 		}
 	}
 

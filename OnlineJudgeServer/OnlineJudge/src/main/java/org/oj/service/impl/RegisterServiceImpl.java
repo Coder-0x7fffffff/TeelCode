@@ -15,10 +15,7 @@ public class RegisterServiceImpl implements IRegisterService {
 	@Override
 	public boolean register(String id, String pwd, String question, String answer) throws SQLException {
 		Login login = loginDao.findLoginById(id);
-		if (null == login) {
-			return 1 == loginDao.insertLogin(id, EncryptionUtil.md5(pwd), question, answer);
-		}
-		return false;
+		return null == login && (1 == loginDao.insertLogin(id, EncryptionUtil.md5(pwd).substring(7, 23), question, answer));
 	}
 	
 	

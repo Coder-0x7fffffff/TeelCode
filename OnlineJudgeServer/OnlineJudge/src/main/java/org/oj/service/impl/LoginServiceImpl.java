@@ -15,10 +15,7 @@ public class LoginServiceImpl implements ILoginService {
 	@Override
 	public boolean login(String id, String pwd) throws SQLException {
 		Login login = loginDao.findLoginById(id);
-		if (null != login && login.getUpwd().equals(EncryptionUtil.md5(pwd))) {
-			return true;
-		}
-		return false;
+		return null != login && login.getUpwd().equals(EncryptionUtil.md5(pwd).substring(7, 23));
 	}
 	
 }

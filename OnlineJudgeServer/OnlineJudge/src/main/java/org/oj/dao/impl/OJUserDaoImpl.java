@@ -38,7 +38,7 @@ public class OJUserDaoImpl implements IOJUserDao {
 
 	@Override
 	public int insertOJUser(String id, String name) throws SQLException {
-		String sql = "INSERT INTO OJUser VALUES(?,?)";
+		String sql = "INSERT INTO OJUser(u_id,u_name) VALUES(?,?)";
 		Object[] params = { id, name };
 		return DBUtil.update(sql, params);
 	}
