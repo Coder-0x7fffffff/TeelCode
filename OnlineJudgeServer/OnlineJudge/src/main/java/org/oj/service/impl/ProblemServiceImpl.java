@@ -67,4 +67,9 @@ public class ProblemServiceImpl implements IProblemService {
 		return classificationDao.findClassificationByName(name);
 	}
 
+	@Override
+	public List<Classification> getClassifications() throws SQLException {
+		return classificationDao.findClassifications();
+	}
+
 }

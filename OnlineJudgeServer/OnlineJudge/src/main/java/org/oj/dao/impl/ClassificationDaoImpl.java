@@ -43,6 +43,13 @@ public class ClassificationDaoImpl implements IClassificationDao {
 		return classificationList.isEmpty() ? null : classificationList.get(0);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Classification> findClassifications() throws SQLException {
+		String sql = "SELECT * FROM Classification";
+		return (List<Classification>) DBUtil.query(sql, null, new SelectResultHandler());
+	}
+	
 	@Override
 	public boolean insertClassification(int id, String name) throws SQLException {
 		String sql = "INSERT INTO Classification VALUES(?,?)";

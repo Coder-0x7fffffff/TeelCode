@@ -49,5 +49,12 @@ public class LoginDaoImpl implements ILoginDao {
 		Object[] params = { id };
 		return DBUtil.update(sql, params);
 	}
+	
+	@Override
+	public int updateLoginPwd(String id, String pwd) throws SQLException{
+		String sql = "UPDATE Login SET u_pwd=? WHERE u_id=?";
+		Object[] params = { id, pwd };
+		return DBUtil.update(sql, params);
+	}
 
 }

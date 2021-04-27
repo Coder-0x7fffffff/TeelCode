@@ -11,6 +11,8 @@ public interface ILoginDao {
 	public int insertLogin(String id, String pwd, String question, String answer) throws SQLException;
 	
 	public int deleteLogin(String id) throws SQLException;
+	
+	public int updateLoginPwd(String id, String pwd) throws SQLException;
 
 	// update
 	
