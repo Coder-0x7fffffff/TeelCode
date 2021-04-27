@@ -1,0 +1,126 @@
+待添加协议
+============================================================================
+#题目列表查询JSON
+{
+	page:1,
+	offset:50
+}
+
+#题目列表返回JSON
+{
+	result:[
+		{
+			problem:{
+				pid:1,
+				pname:"",
+				pdifficulty:1,
+				ppass:1,
+				psubmit:10
+			},
+			class:{
+				cid:1,
+				cname:""
+			}
+		}
+	]
+}
+
+============================================================================
+#题目详情查询JSON
+{
+	problem_id:1,
+}
+
+#题目详情查询返回JSON
+{
+	err:null,
+	problem：{
+		problem_id:1,
+		problem_name:"",
+		problem_detail:"",
+	}
+}
+
+============================================================================
+#题目评论查询JSON
+{
+	problem_id:1,
+	page:0,
+	offset:10,
+}
+
+#题目评论查询返回JSON
+{
+	err:null
+	comments:[
+		{
+			comment_id:1,
+			username:"xiami",
+			img:null,
+			detail:"啦啦啦",
+			time:"2020-10-15 15:33",
+			replies:[
+				{
+					comment_id:3,
+					username:"xiamigame",
+					rely_username:"xiami",
+					time"2020-10-15 17:45",
+					img:null,
+					detail:"哈哈哈"
+				},
+				{
+					comment_id:2,
+					username:"xiamiking",
+					rely_username:"xiami",
+					time"2020-10-15 16:45",
+					img:null,
+					detail:"嘻嘻嘻"
+				}
+			]
+		},
+		{
+			comment_id:4,
+			username:"xiami",
+			img:null,
+			detail:"啦啦啦",
+			time:"2020-10-15 15:33",
+			replies:[
+				{
+					comment_id:6,
+					username:"xiamigame",
+					rely_username:"xiami",
+					time"2020-10-15 17:45",
+					img:null,
+					detail:"哈哈哈"
+				},
+				{
+					comment_id:5,
+					username:"xiamiking",
+					rely_username:"xiami",
+					time"2020-10-15 16:45",
+					img:null,
+					detail:"嘻嘻嘻"
+				}
+			]
+		}
+	]
+}
+
+
+============================================================================
+#评论请求JSON
+{
+	problem_id:1,
+	username:"xiami",
+	img:null,							#null代表默认头像
+	time:"2020-10-15 17:45"
+	detail:"啊吧啊吧啊吧"
+	parent_comment_id:1,				#顶级评论的cid，也就意味着可以作为parentCid的评论必定是顶级评论；顶级评论的parent_comment_id为-1
+	reply_username:"xiami"				#指的是回复的人的username，但是再数据库中需要存储的是id
+}
+
+#评论请求返回JSON
+{
+	err:null							#null代表没有错误，其他返回错误信息
+	cid:8								#发送的评论的id，不可能为-1
+}

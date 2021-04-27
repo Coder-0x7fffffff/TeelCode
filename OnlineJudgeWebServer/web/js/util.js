@@ -11,6 +11,15 @@ function getAjax(){
     return xmlhttp
 }
 
+function postAndWait(path,JSONdata){
+    let ajax = getAjax()
+    ajax.open("post",path,false)
+    ajax.setRequestHeader("Content-Type","application/json")
+    ajax.send(JSON.stringify(JSONdata))
+    let ret = JSON.parse(ajax.responseText)
+    return ret
+}
+
 function showError(msg){
     document.getElementById("err_msg").innerText=msg
     document.getElementById("err_dialog").showModal()
@@ -22,6 +31,7 @@ function hiddenError(){
 
 function logout(){
     removeCookie("token")
+    removeCookie("username")
     window.location.href="/"
 }
 

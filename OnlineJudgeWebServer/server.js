@@ -20,27 +20,137 @@ function getUserInfo(oldToken){
     return {online:online, username:userName, token: token, img:img, err:err}
 }
 
-function login(username, password){
+function login(body){
+    //get data
+    let id = body['id']
+    let password = body['password']
+    //return define
     let img=null
     let online=false
-    let userName=username
+    let username=null
     let token=null
     let err=null
     //login
-    if(username === "xiami"){
+    if(id === "xiami"){
+        username="虾米"
         online=true
         token=123456789
         err=null
     }else err="请输入正确的账号密码"
     //return
-    return {online:online, username:userName, token: token, img:img, err:err}
+    return {online:online, username:username, token: token, img:img, err:err}
 }
 
-function register(username, password, question, answer){
+function register(body){
+    //get data
+    let username = body['username']
+    let password = body['password']
+    let question = body['question']
+    let answer = body['answer']
+    //return define
     let err=null
     //register
     //return
     return {err:err}
+}
+
+function queryQuestion(body){
+    //get data
+    let problem_id = body['problem_id']
+    //return define
+    let err = null
+    let problem = {
+        problem_id:problem_id,
+        problem_name:"",
+        problem_detail:"# abc"
+    }
+    if(problem_id!=1){
+        err = "没有题号为"+problem_id.toString()+"的题目"
+    }
+    //return
+    return {err:err,problem:problem}
+}
+
+function queryComments(body){
+    //get data
+    let problem_id = body['problem_id']
+    let page = body['page']
+    let offset = body['offset']
+    //return define
+    let err = null
+
+    let comment1 = {
+        cid:1,
+        username:"xiami",
+        img:null,
+        detail:"啦啦啦",
+        time:"2020-10-15 15:33",
+        replies:[
+            {
+                cid:3,
+                username:"xiamigame",
+                reply_username:"xiami",
+                time:"2020-10-15 17:45",
+                img:null,
+                detail:"哈哈哈"
+            },
+            {
+                cid:2,
+                username:"xiamiking",
+                reply_username:"xiami",
+                time:"2020-10-15 16:45",
+                img:null,
+                detail:"嘻嘻嘻"
+            }
+        ]
+    }
+    let comment2 = {
+        cid:4,
+        username:"xiami",
+        img:null,
+        detail:"啦啦啦",
+        time:"2020-10-15 15:33",
+        replies:[
+            {
+                cid:6,
+                username:"xiamigame",
+                reply_username:"xiami",
+                time:"2020-10-15 17:45",
+                img:null,
+                detail:"哈哈哈"
+            },
+            {
+                cid:5,
+                username:"xiamiking",
+                reply_username:"xiami",
+                time:"2020-10-15 16:45",
+                img:null,
+                detail:"嘻嘻嘻"
+            }
+        ]
+    }
+    let comment3 = {
+        cid:7,
+        username:"xiami",
+        img:null,
+        detail:"啦啦啦",
+        time:"2020-10-15 15:33",
+        replies:[]
+    }
+
+    let comments=[comment1,comment2,comment3,comment1,comment2,comment3]
+    if(problem_id!=1){
+        err = "没有题号为"+problem_id.toString()+"的题目"
+    }
+    //return
+    return {err:err,comments:comments}
+}
+
+function reply(body){
+    //get data
+
+    //return
+    return {err:null, cid:11}
 }
 
 //ejs constructor
@@ -62,7 +172,7 @@ function getPageHeader(user){
     if(!online){
         userPanel = '<div class="list_item_right"><a href="/register" class="list_item_text">注册</a></div><div class="list_item_right"><a href="/login" class="list_item_text">登录</a></div>'
     }else{
-        userPanel = '<div class="list_item_right"><button class="logout_bnt" id="logout_bnt">退出</button></div><div class="list_item_right"><a href="/userinfo" ><img class="list_item_icon" src="./img/defaut_img.jpg"/></a></div>'
+        userPanel = '<div class="list_item_right"><button class="logout_bnt" id="logout_bnt">退出</button></div><div class="list_item_right"><a href="/userinfo-'+userName+'" ><img class="list_item_icon" src="./img/defaut_img.jpg"/></a></div>'
     }
     //execute header
     return '' +
@@ -155,7 +265,7 @@ function start(port){
         let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
         res.render(__dirname+"/web/login.ejs",opts)
     })
-    server.get("/userinfo",(req, res)=>{
+    server.get("/userinfo-*",(req, res)=>{
         //judge online
         let user = getUserInfo(req.cookies['token'])
         if(!user["online"]){
@@ -200,10 +310,40 @@ function start(port){
     })
     //post
     server.post('/login',(req, res)=>{
-        res.send(login(req.body['username'], req.body['password']))
+        res.send(login(req.body))
     })
     server.post('/register', (req, res)=>{
-        res.send(register(req.body['username'], req.body['password'], req.body['question'], req.body['answer']))
+        res.send(register(req.body))
+    })
+    server.post('/queryQuestion', (req, res)=>{
+        //judge online
+        let user = getUserInfo(req.cookies['token'])
+        if(!user["online"]){
+            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
+            res.render(__dirname+"/web/login.ejs",opts)
+            return
+        }
+        res.send(queryQuestion(req.body))
+    })
+    server.post('/queryComments', (req, res)=>{
+        //judge online
+        let user = getUserInfo(req.cookies['token'])
+        if(!user["online"]){
+            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
+            res.render(__dirname+"/web/login.ejs",opts)
+            return
+        }
+        res.send(queryComments(req.body))
+    })
+    server.post('/reply', (req, res)=>{
+        //judge online
+        let user = getUserInfo(req.cookies['token'])
+        if(!user["online"]){
+            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
+            res.render(__dirname+"/web/login.ejs",opts)
+            return
+        }
+        res.send(reply(req.body))
     })
     //listen
     server.listen(port,()=>{

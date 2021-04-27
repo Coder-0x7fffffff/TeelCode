@@ -14,8 +14,15 @@
                 <li id="tab_panel_opt_question" class="tab_panel_opt">描述</li>
                 <li id="tab_panel_opt_comments" class="tab_panel_opt">交流</li>
             </ul>
-            <div id="question_detail" class="tab_detail"></div>
-            <div id="comments_detail" class="tab_detail"></div>
+            <div id="question_detail" class="question_detail"></div>
+            <div id="comments_root" class="comments_root">
+                <div id="comments_panel" class="comments_panel">
+                    <button id="comments_panel_last_bnt" class="comments_panel_bnt">上一页</button>
+                    <button id="comments_panel_next_bnt" class="comments_panel_bnt">下一页</button>
+                    <button id="comments_panel_reply_bnt" class="comments_panel_bnt">发表评论</button>
+                </div>
+                <div id="comments_detail" class="comments_detail"></div>
+            </div>
         </div>
         <div id="vertical_gap" class="vertical_gap"></div>
         <div id="code_frame" class="code_frame">
@@ -27,10 +34,16 @@
             <div id="code_container" class="code_container"></div>
         </div>
     </div>
+    <dialog id="reply_dialog" class="reply_dialog">
+        <textarea id="reply_text" class="reply_text"></textarea>
+        <button id="reply_confirm" class="reply_bnt">确定</button>
+        <button id="reply_cancel" class="reply_bnt">取消</button>
+    </dialog>
     <dialog id="output_dialog" class="output_dialog">
         <textarea id="output_msg" class="output_msg" readonly="readonly">output</textarea>
         <button id="output_bnt" class="output_bnt">确定</button>
     </dialog>
+
     <%-errorDialog%>
 </div>
 </body>

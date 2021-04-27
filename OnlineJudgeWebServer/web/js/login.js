@@ -13,6 +13,7 @@ class LoginWebModel{
                 return
             }
             setCookie("token", ret["token"],-1)
+            setCookie("username", ret["username"],-1)
             window.location.href="/"
         })
     }
