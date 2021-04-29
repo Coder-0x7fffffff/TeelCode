@@ -8,7 +8,7 @@
 	difficulties:[
 		{					#默认难度value为0 表示所有难度
 			value:0,
-			name:"难度"
+			name:"全部"
 		},
 		{
 			value:1,
@@ -23,36 +23,22 @@
 			name:"困难"
 		},
 	],
-	classes：[
+	classes:[
 		{				#默认分类value为0表示所有题目
 			cid:0,
-			cname:"分类"
+			cname:"全部"
 		},
 		{
 			cid:1,
 			cname:"搜索"
 		},
 		{
-			cid:1,
+			cid:2,
 			cname:"动态规划"
 		},
 		{
-			cid:1,
+			cid:3,
 			cname:"贪心"
-		}
-	],
-	status：[
-		{				#默认状态value为0代表所有题目
-			value:0,
-			name:"完成状态"
-		},
-		{
-			value:1,
-			name:"完成"
-		},
-		{
-			value:2,
-			name:"未完成"
 		}
 	]
 }
@@ -62,26 +48,42 @@
 {
 	page:1,
 	offset:50,
-	difficulty:0,	#0代表查询的所有题目
-	class:0,		#0代表查询所有题目
+	difficulty:0,	#0代表查询所有题目，与info取值含义相同
+	class:0,		#0代表查询所有题目，与info取值含义相同
+	status:0,		#0代表未完成，1代表完成，-1代表所有题目！！！
 }
 
 #题目列表返回JSON
 {
-	result:[
+	problems:[
 		{
 			problem:{
 				pid:1,
-				pname:"",
+				pname:"最长上升子序列",
 				pdifficulty:1,
-				ppass:1,
-				psubmit:10
+				ppass:56,
+				psubmit:104
 			},
 			class:{
-				cid:1,
-				cname:""
+				cid:2,
+				cname:"动态规划"
 			}
-		}
+			passed:1		#用户是否完成
+		},
+		{
+			problem:{
+				pid:2,
+				pname:"最少跳跃次数",
+				pdifficulty:3,
+				ppass:12,
+				psubmit:105
+			},
+			class:{
+				cid:3,
+				cname:"贪心"
+			}
+			passed:0		#0未完成 1完成
+		},
 	]
 }
 
@@ -94,7 +96,7 @@
 #题目详情查询返回JSON
 {
 	err:null,
-	problem：{
+	problem:{
 		problem_id:1,
 		problem_name:"",
 		problem_detail:"",

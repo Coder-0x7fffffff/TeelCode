@@ -156,9 +156,114 @@ function reply(body){
 
 function getUIInfo(body){
     //get date
+    return {
+        difficulties:[
+                {
+                    value:0,
+                    name:"难度"
+                },
+                {
+                    value:1,
+                    name:"简单"
+                },
+                {
+                    value:2,
+                    name:"中等"
+                },
+                {
+                    value:3,
+                    name:"困难"
+                },
+            ],
+        classes:[
+            {
+                cid:0,
+                cname:"分类"
+            },
+            {
+                cid:1,
+                cname:"搜索"
+            },
+            {
+                cid:1,
+                cname:"动态规划"
+            },
+            {
+                cid:1,
+                cname:"贪心"
+            }
+        ],
+        status:[
+            {
+                value:0,
+                name:"完成状态"
+            },
+            {
+                value:1,
+                name:"完成"
+            },
+            {
+                value:2,
+                name:"未完成"
+            }
+        ]
+    }
+}
+
+function queryQuestionList(body){
+    let page = body["page"]
+    let offset = body["offset"]
+    let difficulty = body["difficulty"]
+    let clazz = body["class"]
+    //get data
+    return {
+        problems:[
+            {
+                problem:{
+                    pid:1,
+                    pname:"最长上升子序列",
+                    pdifficulty:1,
+                    ppass:56,
+                    psubmit:104
+                },
+                class:{
+                    cid:2,
+                    cname:"动态规划"
+                },
+                passed:1
+            },
+            {
+                problem:{
+                    pid:2,
+                    pname:"最少跳跃次数",
+                    pdifficulty:3,
+                    ppass:12,
+                    psubmit:105
+                },
+                class:{
+                    cid:3,
+                    cname:"贪心"
+                },
+                passed:0
+            },
+        ]
+    }
 }
 
 //ejs constructor
+function handleRequest(req, res, shouldOnline, callback){
+    if(shouldOnline){
+        //judge online
+        let user = getUserInfo(req.cookies['token'])
+        if(!user["online"]){
+            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
+            res.render(__dirname+"/web/login.ejs",opts)
+            return
+        }
+    }
+    res.send(callback(req.body))
+}
+
 function getPageBottom(){
     return ''+
         '       <div id="page_bottom" class="page_bottom">\n' +
@@ -315,50 +420,25 @@ function start(port){
     })
     //post
     server.post('/login',(req, res)=>{
-        res.send(login(req.body))
+        handleRequest(req, res, false, login)
     })
     server.post('/register', (req, res)=>{
-        res.send(register(req.body))
+        handleRequest(req, res, false, register)
     })
     server.post('/queryQuestion', (req, res)=>{
-        //judge online
-        let user = getUserInfo(req.cookies['token'])
-        if(!user["online"]){
-            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
-            res.render(__dirname+"/web/login.ejs",opts)
-            return
-        }
-        res.send(queryQuestion(req.body))
+        handleRequest(req, res, true, queryQuestion)
     })
     server.post('/queryComments', (req, res)=>{
-        //judge online
-        let user = getUserInfo(req.cookies['token'])
-        if(!user["online"]){
-            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
-            res.render(__dirname+"/web/login.ejs",opts)
-            return
-        }
-        res.send(queryComments(req.body))
+        handleRequest(req, res, true, queryComments)
     })
     server.post('/reply', (req, res)=>{
-        //judge online
-        let user = getUserInfo(req.cookies['token'])
-        if(!user["online"]){
-            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
-            res.render(__dirname+"/web/login.ejs",opts)
-            return
-        }
-        res.send(reply(req.body))
+        handleRequest(req, res, true, reply)
     })
-    server.post('/UIInfo', (req, res) => {
-        //judge online
-        let user = getUserInfo(req.cookies['token'])
-        if(!user["online"]){
-            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
-            res.render(__dirname+"/web/login.ejs",opts)
-            return
-        }
-        res.send(getUIInfo(req.body))
+    server.post('/getUIInfo', (req, res) => {
+        handleRequest(req, res, true, getUIInfo)
+    })
+    server.post('/queryQuestionList', (req, res)=>{
+        handleRequest(req, res, true, queryQuestionList)
     })
     //listen
     server.listen(port,()=>{
