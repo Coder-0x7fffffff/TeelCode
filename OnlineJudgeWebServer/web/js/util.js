@@ -37,7 +37,13 @@ function logout(){
 
 //init of page
 function initialize(){
-    document.getElementById("err_bnt").addEventListener("click",()=>{hiddenError()})
-    document.getElementById("logout_bnt").addEventListener("click", ()=>{logout()})
+    let elem = document.getElementById("err_bnt")
+    if(elem != null){
+        elem.addEventListener("click",()=>{hiddenError()})
+    }
+    elem  = document.getElementById("logout_bnt")
+    if(elem != null){
+        elem.addEventListener("click", ()=>{logout()})
+    }
 }
 initialize()

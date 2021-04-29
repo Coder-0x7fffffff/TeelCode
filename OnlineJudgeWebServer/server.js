@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser")
 const bodyParser = require("body-parser")
 
 const server = express()
+
 //server contact
 function getUserInfo(oldToken){
     let img = null
@@ -64,7 +65,7 @@ function queryQuestion(body){
         problem_name:"",
         problem_detail:"# abc"
     }
-    if(problem_id!=1){
+    if(problem_id!==1){
         err = "没有题号为"+problem_id.toString()+"的题目"
     }
     //return
@@ -151,6 +152,10 @@ function reply(body){
 
     //return
     return {err:null, cid:11}
+}
+
+function getUIInfo(body){
+    //get date
 }
 
 //ejs constructor
@@ -344,6 +349,16 @@ function start(port){
             return
         }
         res.send(reply(req.body))
+    })
+    server.post('/UIInfo', (req, res) => {
+        //judge online
+        let user = getUserInfo(req.cookies['token'])
+        if(!user["online"]){
+            let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
+            res.render(__dirname+"/web/login.ejs",opts)
+            return
+        }
+        res.send(getUIInfo(req.body))
     })
     //listen
     server.listen(port,()=>{
