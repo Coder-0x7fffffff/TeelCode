@@ -10,7 +10,7 @@ public interface IProblemDao {
 	public Problem findProblemById(int id) throws SQLException;
 	
 	public List<Problem> findProblems(
-			int page, int pageSize, int difficulty, int classification, int status) throws SQLException;
+			String uid, int page, int pageSize, int difficulty, int classification, int status) throws SQLException;
 	
 	public boolean insertProblem(int id, String name, int difficulty, int pass, int submit, String dscp, String inputs,
 			String outputs) throws SQLException;

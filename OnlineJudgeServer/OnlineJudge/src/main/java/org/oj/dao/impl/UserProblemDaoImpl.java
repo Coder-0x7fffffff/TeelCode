@@ -15,14 +15,14 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 	private static class SelectResultHandler implements ResultHandler {
 		@Override
 		public Object handle(ResultSet resultSet) throws SQLException {
-			List<UserProblem> lists = new ArrayList<UserProblem>();
+			List<UserProblem> userProblemlists = new ArrayList<UserProblem>();
 			while (resultSet.next()) {
 				String uid = resultSet.getString(1);
 				int pid = resultSet.getInt(2);
 				int pstate = resultSet.getInt(3);
-				lists.add(new UserProblem(uid, pid, pstate));
+				userProblemlists.add(new UserProblem(uid, pid, pstate));
 			}
-			return lists;
+			return userProblemlists;
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 
 	@SuppressWarnings("unchecked")
 	public int findStateByUidAndPid(String uid, int pid) throws SQLException {
-		String sql = "SELECT * FROM UserProblem WHERE u_id=? and p_id=?";
+		String sql = "SELECT * FROM UserProblem WHERE u_id=? AND p_id=?";
 		Object[] params = { uid, pid };
 		return ((List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER)).get(0).getPstate();
 	}

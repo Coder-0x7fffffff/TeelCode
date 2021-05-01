@@ -44,7 +44,7 @@ public class GetProblem extends HttpServlet {
 			int pid = Integer.parseInt(WebUtil.decode(request.getParameter("id")));
 			IProblemService problemService = new ProblemServiceImpl();
 			try {
-				ProblemWithClassification problemWithClassification = problemService.getProblemWithClassification(pid);
+				ProblemWithClassification problemWithClassification = problemService.getProblemWithClassification(uid, pid);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
 		        Map<String, Object> jsonMap = new HashMap<String, Object>();
@@ -57,7 +57,6 @@ public class GetProblem extends HttpServlet {
 		} else {
 			/* */
 		}
-		
 	}
 
 	/**

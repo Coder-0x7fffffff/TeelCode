@@ -42,14 +42,56 @@ public class ProblemDaoImpl implements IProblemDao {
 		return problemList.isEmpty() ? null : problemList.get(0);
 	}
 
+//	difficulty	# 0代表查询所有题目
+//	class		# 0代表查询所有题目
+//	status		# 0代表未完成，1代表完成，-1代表所有题目
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Problem> findProblems(
-			int page, int pageSize, int difficulty, int classification, int status) throws SQLException {
+			String uid, int page, int pageSize, int difficulty, int classification, int status) throws SQLException {
 		/* Unfinished */
-		String sql = "SELECT * FROM Problem LIMIT ?, ?";
-		Object[] params = { (page - 1) * pageSize, pageSize };
-		return (List<Problem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
+//		"SELECT * FROM Classification WHERE c_id=?"; // classification
+//		"SELECT * FROM UserProblem WHERE u_id=? AND p_state=?"; // uid, status
+//		"SELECT * FROM Problem WHERE p_difficulty=? LIMIT ?, ?"; // difficulty, (page-1)*pageSize, pageSize
+		StringBuffer sqlStringBuffer = new StringBuffer();
+		List<Object> paramsList = new ArrayList<Object>();
+		sqlStringBuffer.append("SELECT * FROM Problem");
+		boolean flag = false;
+		if (0 != difficulty) {
+			if (!flag) {
+				sqlStringBuffer.append(" WHERE");
+			}
+			else {
+				sqlStringBuffer.append(" AND");
+			}
+			sqlStringBuffer.append(" p_difficulty=?");
+			paramsList.add(difficulty);
+		}
+		if (0 != classification) {
+			if (!flag) {
+				sqlStringBuffer.append(" WHERE");
+			}
+			else {
+				sqlStringBuffer.append(" AND");
+			}
+			sqlStringBuffer.append(" p_id IN(SELECT p_id FROM Classification WHERE c_id=?)");
+			paramsList.add(classification);
+		}
+		if (0 != status) {
+			if (!flag) {
+				sqlStringBuffer.append(" WHERE");
+			}
+			else {
+				sqlStringBuffer.append(" AND");
+			}
+			sqlStringBuffer.append(" p_id IN(SELECT p_id FROM UserProblem WHERE u_id=? AND p_state=?)");
+			paramsList.add(uid);
+			paramsList.add(status);
+		}
+		sqlStringBuffer.append(" LIMIT ?, ?");
+		paramsList.add((page - 1) * pageSize);
+		paramsList.add(pageSize);
+		return (List<Problem>) DBUtil.query(sqlStringBuffer.toString(), paramsList.toArray(), SELECT_RESULT_HANDLER);
 	}
 	
 	@Override

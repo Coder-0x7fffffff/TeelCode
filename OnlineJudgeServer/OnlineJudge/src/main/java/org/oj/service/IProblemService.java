@@ -11,7 +11,7 @@ public interface IProblemService {
 	public List<ProblemWithClassification> all(
 			String uid, int page, int pageSize, int difficulty, int classification, int status) throws SQLException;
 
-	public ProblemWithClassification getProblemWithClassification(int id) throws SQLException;
+	public ProblemWithClassification getProblemWithClassification(String uid, int pid) throws SQLException;
 
 	public boolean addProblem(int id, String name, int difficulty, int pass, int submit, String dscp, String inputs,
 			String outputs, List<Classification> classificationList) throws SQLException;
