@@ -22,24 +22,26 @@ public class ProblemServiceImpl implements IProblemService {
 	IProblemClassificationDao problemClassificationDao = new ProblemClassificationDaoImpl();
 	
 	@Override
-	public List<ProblemWithClassification> all(int page, int pageSize) throws SQLException {
+	public List<ProblemWithClassification> all(
+			String uid, int page, int pageSize, int difficulty, int classification, int status) throws SQLException {
 		List<ProblemWithClassification> problemWithClassificationList = new ArrayList<ProblemWithClassification>(); 
-		List<Problem> problemList = problemDao.findProblems(page, pageSize);
+		List<Problem> problemList = problemDao.findProblems(page, pageSize, difficulty, classification, status);
 		for (Problem problem : problemList) {
-			problemWithClassificationList.add(getProblem(problem.getPid()));
+			problemWithClassificationList.add(getProblemWithClassification(problem.getPid()));
 		}
 		return problemWithClassificationList;
 	}
 
 	@Override
-	public ProblemWithClassification getProblem(int id) throws SQLException {
+	public ProblemWithClassification getProblemWithClassification(int id) throws SQLException {
 		Problem problem = problemDao.findProblemById(id);
 		List<Integer> cidList = problemClassificationDao.findCidsByPid(problem.getPid());
 		List<Classification> classificationList = new ArrayList<Classification>();
 		for (int cid : cidList) {
 			classificationList.add(classificationDao.findClassificationById(cid));
 		}
-		return new ProblemWithClassification(problem, classificationList);
+		int passed = 0;
+		return new ProblemWithClassification(problem, classificationList, passed);
 	}
 
 	@Override

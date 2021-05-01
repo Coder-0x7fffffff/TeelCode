@@ -11,7 +11,7 @@ import org.oj.util.DBUtil.ResultHandler;
 
 public class ProblemClassificationDaoImpl implements IProblemClassificationDao {
 
-	private class SelectResultHandler implements ResultHandler {
+	private static class SelectResultHandler implements ResultHandler {
 		@Override
 		public Object handle(ResultSet resultSet) throws SQLException {
 			List<Integer> lists = new ArrayList<Integer>();
@@ -22,12 +22,14 @@ public class ProblemClassificationDaoImpl implements IProblemClassificationDao {
 		}
 	}
 	
+	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Integer> findCidsByPid(int pid) throws SQLException {
 		String sql = "SELECT c_id FROM ProblemClassification WHERE p_id=?";
 		Object[] params = { pid };
-		return (List<Integer>) DBUtil.query(sql, params, new SelectResultHandler());
+		return (List<Integer>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,7 +37,7 @@ public class ProblemClassificationDaoImpl implements IProblemClassificationDao {
 	public List<Integer> findPidsByCid(int cid) throws SQLException {
 		String sql = "SELECT p_id FROM ProblemClassification WHERE c_id=?";
 		Object[] params = { cid };
-		return (List<Integer>) DBUtil.query(sql, params, new SelectResultHandler());
+		return (List<Integer>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
 
 	@Override

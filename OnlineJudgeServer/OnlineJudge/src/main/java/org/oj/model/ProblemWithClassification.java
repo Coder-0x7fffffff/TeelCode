@@ -9,16 +9,19 @@ public class ProblemWithClassification {
 
 	private Problem problem;
 	private List<Classification> classificationList;
+	private int passed;
 	
-	public ProblemWithClassification(Problem problem, List<Classification> classificationList) {
+	public ProblemWithClassification(Problem problem, List<Classification> classificationList, int passed) {
 		super();
 		this.problem = problem;
 		this.classificationList = classificationList;
+		this.passed = passed;
 	}
 	
 	@Override
 	public String toString() {
-		return "ProblemWithClassification [problem=" + problem + ", classificationList=" + classificationList + "]";
+		return "ProblemWithClassification [problem=" + problem + ", classificationList=" + classificationList
+				+ ", passed=" + passed + "]";
 	}
 	
 	public Problem getProblem() {
@@ -36,5 +39,14 @@ public class ProblemWithClassification {
 	public void setClassificationList(List<Classification> classificationList) {
 		this.classificationList = classificationList;
 	}
+	
+	public int getPassed() {
+		return passed;
+	}
+	
+	public void setPassed(int passed) {
+		this.passed = passed;
+	}
+	
 	
 }

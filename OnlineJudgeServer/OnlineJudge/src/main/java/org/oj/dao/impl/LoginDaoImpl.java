@@ -12,7 +12,7 @@ import org.oj.util.DBUtil.ResultHandler;
 
 public class LoginDaoImpl implements ILoginDao {
 	
-	private class SelectResultHandler implements ResultHandler {
+	private static class SelectResultHandler implements ResultHandler {
 		@Override
 		public Object handle(ResultSet resultSet) throws SQLException {
 			List<Login> loginList = new ArrayList<Login>();
@@ -26,13 +26,15 @@ public class LoginDaoImpl implements ILoginDao {
 			return loginList;
 		}
 	}
+	
+	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
 
 	@Override
 	public Login findLoginById(String id) throws SQLException {
 		String sql = "SELECT * FROM Login WHERE u_id=?";
 		Object[] params = { id };
 		@SuppressWarnings("unchecked")
-		List<Login> loginList = (List<Login>) DBUtil.query(sql, params, new SelectResultHandler()); 
+		List<Login> loginList = (List<Login>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER); 
 		return loginList.isEmpty() ? null : loginList.get(0);
 	}
 	

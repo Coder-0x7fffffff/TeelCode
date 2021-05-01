@@ -12,7 +12,7 @@ import org.oj.util.DBUtil.ResultHandler;
 
 public class ProblemDaoImpl implements IProblemDao {
 
-	private class SelectResultHandler implements ResultHandler {
+	private static class SelectResultHandler implements ResultHandler {
 		@Override
 		public Object handle(ResultSet resultSet) throws SQLException {
 			List<Problem> problemList = new ArrayList<Problem>();
@@ -31,21 +31,25 @@ public class ProblemDaoImpl implements IProblemDao {
 		}
 	};
 	
+	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
+	
 	@Override
 	public Problem findProblemById(int id) throws SQLException {
 		String sql = "SELECT * FROM Problem WHERE p_id=?";
 		Object[] params = { id };
 		@SuppressWarnings("unchecked")
-		List<Problem> problemList = (List<Problem>) DBUtil.query(sql, params, new SelectResultHandler());
+		List<Problem> problemList = (List<Problem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 		return problemList.isEmpty() ? null : problemList.get(0);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Problem> findProblems(int page, int pageSize) throws SQLException {
+	public List<Problem> findProblems(
+			int page, int pageSize, int difficulty, int classification, int status) throws SQLException {
+		/* Unfinished */
 		String sql = "SELECT * FROM Problem LIMIT ?, ?";
 		Object[] params = { (page - 1) * pageSize, pageSize };
-		return (List<Problem>) DBUtil.query(sql, params, new SelectResultHandler());
+		return (List<Problem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
 	
 	@Override
