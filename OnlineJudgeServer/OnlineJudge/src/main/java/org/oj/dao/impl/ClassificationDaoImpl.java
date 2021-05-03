@@ -12,7 +12,7 @@ import org.oj.util.DBUtil.ResultHandler;
 
 public class ClassificationDaoImpl implements IClassificationDao {
 
-	private class SelectResultHandler implements ResultHandler {
+	private static class SelectResultHandler implements ResultHandler {
 		@Override
 		public Object handle(ResultSet resultSet) throws SQLException {
 			List<Classification> classificationList = new ArrayList<Classification>();
@@ -25,12 +25,14 @@ public class ClassificationDaoImpl implements IClassificationDao {
 		}
 	}
 	
+	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
+	
 	@Override
 	public Classification findClassificationById(int id) throws SQLException {
 		String sql = "SELECT * FROM Classification WHERE c_id=?";
 		Object[] params = { id };
 		@SuppressWarnings("unchecked")
-		List<Classification> classificationList = (List<Classification>) DBUtil.query(sql, params, new SelectResultHandler());
+		List<Classification> classificationList = (List<Classification>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 		return classificationList.isEmpty() ? null : classificationList.get(0);
 	}
 
@@ -39,7 +41,7 @@ public class ClassificationDaoImpl implements IClassificationDao {
 		String sql = "SELECT * FROM Classification WHERE c_name=?";
 		Object[] params = { name };
 		@SuppressWarnings("unchecked")
-		List<Classification> classificationList = (List<Classification>) DBUtil.query(sql, params, new SelectResultHandler());
+		List<Classification> classificationList = (List<Classification>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 		return classificationList.isEmpty() ? null : classificationList.get(0);
 	}
 	

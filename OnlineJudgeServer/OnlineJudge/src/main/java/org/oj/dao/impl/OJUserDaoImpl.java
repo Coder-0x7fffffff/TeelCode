@@ -12,7 +12,7 @@ import org.oj.util.DBUtil.ResultHandler;
 
 public class OJUserDaoImpl implements IOJUserDao {
 	
-	private class SelectResultHandler implements ResultHandler {
+	private static class SelectResultHandler implements ResultHandler {
 		@Override
 		public Object handle(ResultSet resultSet) throws SQLException {
 			List<OJUser> ojuserList = new ArrayList<>();
@@ -27,12 +27,14 @@ public class OJUserDaoImpl implements IOJUserDao {
 		}
 	}
 
+	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
+	
 	@Override
 	public OJUser findOJUserById(String id) throws SQLException {
 		String sql = "SELECT * FROM OJUser WHERE u_id=?";
 		Object[] params = { id };
 		@SuppressWarnings("unchecked")
-		List<OJUser> ojuserList = (List<OJUser>) DBUtil.query(sql, params, new SelectResultHandler());
+		List<OJUser> ojuserList = (List<OJUser>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 		return ojuserList.isEmpty() ? null : ojuserList.get(0);
 	}
 

@@ -15,8 +15,9 @@
 #include "file_util.hpp"
 #include "file_compare.hpp"
 #include "syscall_tracer.hpp"
+#include "tiny_json.hpp"
 
-
+#define CP_NULL ((char*)0)
 
 #ifdef __x86_64__
     #define WORD_SIZE 8
@@ -38,12 +39,6 @@
 #define JAVA_SUFFIX ".java"
 #define PYTHON_SUFFIX ".py"
 #define CMD_MAX_LEN 10
-
-const char* C_CMD[] = { "gcc", "-O2", "-w", "-fmax-errors=3", "-std=c11", "lm", NULL };
-const char* CPP_CMD[] = { "g++", "-O2", "-w", "-fmax-errors=3", "-std=c++11", "lm", NULL };
-const char* JAVA_CMD[] = { "javac", "-encoding", "UTF8", NULL };
-const char* PYTHON2_CMD[] = { "python", "-m", "py_compile", NULL };
-const char* PYTHON3_CMD[] = { "python3", "-m", "py_compile", NULL };
 
 class Judge {
 private:
@@ -89,23 +84,25 @@ public:
     }
 
     int judge(const std::string& code, const std::string& samplePath, const std::string& dirPath, LanguageType languageType) {
+        int exitCode = 1;
         createFiles(dirPath, languageType);
         if (0 == input(code, dirPath, languageType)) {
             if (0 == compile(dirPath, languageType)) {
                 run(samplePath, dirPath, languageType);
-                output();
-                return 0;
+                exitCode = 0;
             }
         }
         /* input error? */
-        return 1;
+        output();
+        return exitCode;
     }
 
 private:
     /* 0. Create Files */
     void createFiles(const std::string& dirPath, LanguageType languageType) {
-        const std::string filePath = dirPath + "/main";
+        const std::string filePath = dirPath + "/Main";
         FileUtil::createFile(logFilePath = FileUtil::logPath(filePath));
+        Logger::setLogPath(logFilePath);
         FileUtil::createFile(exeFilePath = FileUtil::exePath(filePath));
         FileUtil::createFile(compileErrorFilePath = FileUtil::compileErrorPath(filePath));
         FileUtil::createFile(stdinFilePath = FileUtil::stdinPath(filePath));
@@ -122,7 +119,7 @@ private:
         case LanguageType::JAVA:
             srcFilePath = filePath + JAVA_SUFFIX;
             break;
-        case LanguageType::PYTHON:
+        case LanguageType::PYTHON2: case LanguageType::PYTHON3:
             srcFilePath = filePath + PYTHON_SUFFIX;
             break;
         default:
@@ -133,11 +130,11 @@ private:
 
     /* 1. input code and specify the language */
     int input(const std::string& code, const std::string& dirPath, LanguageType languageType) {
-        Logger::log(logFilePath, StringUtil::format("Input!..."));
+        Logger::log(StringUtil::format("Input!..."));
         /* Create SyscallTracer */
         pSyscallTracer = std::make_unique<SyscallTracer>(languageType);
         /* Write code */
-        Logger::log(logFilePath, StringUtil::format("Write code to %s", srcFilePath.c_str()));
+        Logger::log(StringUtil::format("Write code to %s", srcFilePath.c_str()));
         return FileUtil::writeFile(srcFilePath, code);
     }
 
@@ -146,65 +143,74 @@ private:
         /* Create Compile Info File */
         int fd = open(compileErrorFilePath.c_str(), O_WRONLY | O_CREAT, 0666);
         if (-1 == fd) {
-            Logger::log(logFilePath, StringUtil::format("Open compileError file error"));
-            Logger::log(logFilePath, StringUtil::format("Child process exit(1)"));
+            Logger::log(StringUtil::format("Open compileError file error"));
+            Logger::log(StringUtil::format("Child process exit(1)"));
             /* Child process abnormal exit */
             exit(1);
         }
 
         std::string executedCommand;
-        for (int i = 0; i < 10 && NULL != command[i]; ++i) {
+        for (int i = 0; NULL != command[i]; ++i) {
             executedCommand += command[i];
             executedCommand += " ";
         }
 
-        Logger::log(logFilePath, StringUtil::format("Execute: %s", executedCommand.c_str()));
+        Logger::log(StringUtil::format("Execute: %s", executedCommand.c_str()));
         /* Execute command */
         dup2(fd, 2);
         execvp(command[0], command);
-        Logger::log(logFilePath, StringUtil::format("Child process exit(0)"));
+        Logger::log(StringUtil::format("Child process exit(0)"));
         /* Child process normal exit */
         exit(0);
     }
 
     int watchCompile(int pid) {
-        Logger::log(logFilePath, StringUtil::format("Waiting Child process! pid=%d", pid));
+        Logger::log(StringUtil::format("Waiting Child process! pid=%d", pid));
         /* Wait child process */
         waitpid(pid, NULL, 0);
         /* Child process finished */
-        Logger::log(logFilePath, StringUtil::format("Child process finished!"));
-        struct stat st;
+        Logger::log(StringUtil::format("Child process finished!"));
         /* If compile is success, there muse be an executable file */
-        if (-1 == (stat(exeFilePath.c_str(), &st))) {
-            Logger::log(logFilePath, StringUtil::format("%s not found!", exeFilePath.c_str()));
-            return 1;
-        }
-        if (0 == st.st_size) {
-            Logger::log(logFilePath, StringUtil::format("Compile %s failed!", srcFilePath.c_str()));
-            resultSet.resultInfo = CE;
+        if (!FileUtil::isExist(compileErrorFilePath) || 
+            0 != FileUtil::getFileSize(compileErrorFilePath)) {
+            Logger::log(StringUtil::format("Compile %s failed!", srcFilePath.c_str()));
+            resultSet.resultCode = CE;
             FileUtil::readFile(compileErrorFilePath, resultSet.resultInfo);
+            resultSets.push_back(resultSet);
             return 1;
         }
-        Logger::log(logFilePath, StringUtil::format("Compile %s OK!", srcFilePath.c_str()));
+        Logger::log(StringUtil::format("Compile %s OK!", srcFilePath.c_str()));
         return 0;
     }
 
     /* 2. compile */
     int compile(const std::string& dirPath, LanguageType languageType) {
-        Logger::log(logFilePath, StringUtil::format("Compile!..."));
-        /* Set compile command */
-        char* command[CMD_MAX_LEN] = { 0 };
-        for (int i = 0; i < 10; ++i) {
-            command[i] = new char[50];
+        if (LanguageType::PYTHON2 == languageType || 
+        LanguageType::PYTHON3 == languageType) {
+            /* python no compile */
+            return 0;
         }
-        sprintf(command[0], "%s", "g++");
-        sprintf(command[1], "%s", srcFilePath.c_str());
-        sprintf(command[2], "%s", "-o");
-        sprintf(command[3], "%s", exeFilePath.c_str());
-        sprintf(command[4], "%s", "-std=c++11");
-        command[5] = NULL;
+        Logger::log(StringUtil::format("Compile!..."));
 
-        Logger::log(logFilePath, StringUtil::format("fork!..."));
+        /* Set compile command */
+        const char* C_CMD[] = {"gcc", srcFilePath.c_str(), "-o", exeFilePath.c_str(), "-O2", "-fmax-errors=10", "-Wall",
+						  "-lm", "--static", "-std=c99", "-DONLINE_JUDGE", CP_NULL};
+        const char* CPP_CMD[] = {"g++", "-fno-asm", "-fmax-errors=10", "-Wall",
+						  "-lm", "--static", "-std=c++11", "-DONLINE_JUDGE", "-o", exeFilePath.c_str(), srcFilePath.c_str(), CP_NULL};
+        const char* JAVA_CMD[] = { "javac", "-J-Xms32m", "-J-Xmx256m", "-encoding", "UTF8", srcFilePath.c_str(), CP_NULL };
+
+        char** command = nullptr;
+
+        if (LanguageType::C == languageType) {
+            command = const_cast<char**>(C_CMD);
+        }
+        else if (LanguageType::CPP == languageType) {
+            command = const_cast<char**>(CPP_CMD);
+        }
+        else if (LanguageType::JAVA == languageType) {
+            command = const_cast<char**>(JAVA_CMD);
+        }
+        Logger::log(StringUtil::format("fork!..."));
         int pid = fork();
         if (0 == pid) {
             compileMain(command);
@@ -212,7 +218,7 @@ private:
         return watchCompile(pid);
     }
 
-    void runMain(int timeLimit, int memLimit) {
+    void runMain(int timeLimit, int memLimit, LanguageType languageType) {
         /* Child process */
         /* Set limmit */
         rlimit r;
@@ -223,10 +229,12 @@ private:
 
         alarm(0);
 
-        getrlimit(RLIMIT_AS, &r);
-        r.rlim_cur = memLimit * 1024;
-        r.rlim_max = memLimit * 1024;
-        setrlimit(RLIMIT_AS, &r);
+        if (LanguageType::JAVA != languageType) {
+            getrlimit(RLIMIT_AS, &r);
+            r.rlim_cur = memLimit * 1024;
+            r.rlim_max = memLimit * 1024;
+            setrlimit(RLIMIT_AS, &r);
+        }
 
         /* Redirect stdin stdout stderr */
         freopen(stdinFilePath.c_str(), "r", stdin);
@@ -238,7 +246,22 @@ private:
             /* Chile process abnormal exit */
             exit(1);
         }
-        execl(exeFilePath.c_str(), exeFilePath.c_str(), NULL);
+        if (LanguageType::C == languageType ||
+        LanguageType::CPP == languageType) {
+            execl(exeFilePath.c_str(), exeFilePath.c_str(), CP_NULL);
+        }
+        else if (LanguageType::JAVA == languageType) {
+            const char* JAVA_CMD[] = { "java", exeFilePath.c_str(), CP_NULL };
+            execvp(JAVA_CMD[0], const_cast<char**>(JAVA_CMD));
+        }
+        else if (LanguageType::PYTHON2 == languageType) {
+            const char* PY2_CMD[] = { "python2", srcFilePath.c_str(), CP_NULL };
+            execvp(PY2_CMD[0], const_cast<char**>(PY2_CMD));
+        }
+        else if (LanguageType::PYTHON3 == languageType) {
+            const char* PY3_CMD[] = { "python3", srcFilePath.c_str(), CP_NULL };
+            execvp(PY3_CMD[0], const_cast<char**>(PY3_CMD));
+        }
         /* Chile process normal exit */
         exit(0);
     }
@@ -252,16 +275,17 @@ private:
         for (;;) {
 
             if (-1 == wait4(pid, &status, __WALL, &rused)) {
-                Logger::log(logFilePath, StringUtil::format("wait4 failed! pid=%d", pid));
+                Logger::log(StringUtil::format("wait4 failed! pid=%d", pid));
                 resultSet.resultCode = RE;
                 break;
+
             }
 
             if (first) {
                 first = false;
                 if (-1 == pSyscallTracer->trace(pid)) {
-                    Logger::log(logFilePath, 
-                    StringUtil::format("ptrace(PTRACE_SETOPTIONS, %d, 0, PTRACE_O_TRACEEXIT | PTRACE_O_EXITKILL) error %s", pid, strerror(errno)));
+                    Logger::log(
+                    StringUtil::format("ptrace(PTRACE_SETOPTIONS, %d, 0, PTRACE_O_TRACESYSGOOD | PTRACE_O_TRACEEXIT) error: %s", pid, strerror(errno)));
                     resultSet.resultCode = RE;
                     break;
                 }
@@ -295,6 +319,7 @@ private:
 
             /* If error file is not empty, then quit and set RE fault */
             if (FileUtil::getFileSize(stderrFilePath)) {
+                Logger::log(StringUtil::format("%s is not empty", stderrFilePath.c_str()));
                 resultSet.resultCode = RE;
                 pSyscallTracer->killChild(pid);
                 break;
@@ -307,7 +332,7 @@ private:
             }
             else {
                 /*  */
-                Logger::log(logFilePath, StringUtil::format("exit code=%d", exitCode));
+                Logger::log(StringUtil::format("exit code=%d", exitCode));
                 switch (exitCode) {
                 case SIGCHLD: case SIGALRM:
                     alarm(0);
@@ -324,6 +349,7 @@ private:
             /* If 0 != WIFSIGNALED(status), it means the process exit abnormal */
             if (WIFSIGNALED(status)) {
                 int sig = WTERMSIG(status);
+                Logger::log(StringUtil::format("WIFSIGNALED(status)=%d", sig));
                 switch (sig) {
                 case SIGCHLD: case SIGALRM:
                     alarm(0);
@@ -338,17 +364,18 @@ private:
             }
             else {
                 if (SIGSEGV == WSTOPSIG(status)) {
-                    Logger::log(logFilePath, StringUtil::format("child process %d received SIGSEGV, killing... ", pid));
+                    Logger::log(StringUtil::format("child process %d received SIGSEGV, killing... ", pid));
                     if (-1 == kill(pid, SIGKILL)) {
-                        Logger::log(logFilePath, StringUtil::format("Failed %s", strerror(errno)));
+                        Logger::log(StringUtil::format("Failed %s", strerror(errno)));
                     }
                     else {
-                        Logger::log(logFilePath, StringUtil::format("Done!"));
+                        Logger::log(StringUtil::format("Done!"));
                     }
                 }
                 else if (WIFSTOPPED(status) && (WSTOPSIG(status) & 0x80)) {
                     long callid = ptrace(PTRACE_PEEKUSER, pid, WORD_SIZE * ORIG_EAX, NULL); // get syscall num
                     if (callid >= NR_syscalls) {
+                        Logger::log(StringUtil::format("syscallid=%ld", callid));
                         resultSet.resultCode = RE;
                         break;
                     }
@@ -356,7 +383,7 @@ private:
                         --(*pSyscallTracer)[callid];
                     }
                     else {
-                        Logger::log(logFilePath, StringUtil::format("child process %d is trying to invoke the banned system call, kill it\n", pid));
+                        Logger::log(StringUtil::format("child process %d is trying to invoke the banned system call, kill it\n", pid));
                         resultSet.resultCode = RE;
                         pSyscallTracer->killChild(pid);
                         break;
@@ -366,7 +393,7 @@ private:
 
             /* Let child process continue and still ptrace it */
             if (-1 == pSyscallTracer->traceSyscall(pid)) {
-                Logger::log(logFilePath, StringUtil::format("ptrace(PTRACE_SYSCALL, %d, 0, 0) error %s", pid, strerror(errno)));
+                Logger::log(StringUtil::format("ptrace(PTRACE_SYSCALL, %d, 0, 0) error: %s", pid, strerror(errno)));
                 resultSet.resultCode = RE;
                 break;
             }
@@ -387,8 +414,7 @@ private:
             resultSet.memUsage = memLimit * 1024;
         }
 
-        Logger::log(logFilePath,
-        StringUtil::format("Current: time usage=%d ms, memory usage=%d kb", 
+        Logger::log(StringUtil::format("Current: time usage=%d ms, memory usage=%d kb", 
         resultSet.timeUsage, resultSet.memUsage));
     }
 
@@ -407,7 +433,7 @@ private:
 
     /* 3. run and judge the result */
     int run(const std::string& samplePath, const std::string& dirPath, LanguageType languageType) {
-        Logger::log(logFilePath, StringUtil::format("Run!..."));
+        Logger::log(StringUtil::format("Run!..."));
         /* For c & cpp, the time waste limit is 1s, memory limit is 64MB, others are 2s and 128MB */
         int timeLimit = 1000;      // 1 s
         int memLimit = 640 * 1024; // 64 MB
@@ -415,10 +441,9 @@ private:
             timeLimit *= 2;
             memLimit *= 2;
         }
-        Logger::log(logFilePath, StringUtil::format("fork!..."));
+        Logger::log(StringUtil::format("fork!..."));
         /* How many sample(test case) */
-        int sampleCount = 1;
-        for (int i = 1; i <= sampleCount; ++i) {          
+        for (int i = 1; FileUtil::isExist(StringUtil::format("%s/%d.in", samplePath.c_str(), i)); ++i) {
             /* clear */
             resultSet = ResultSet();
             std::string sampleOutFilePath = StringUtil::format("%s/%d.out", samplePath.c_str(), i);
@@ -427,7 +452,7 @@ private:
             stdinFilePath = sampleInFilePath;
             int pid = fork();
             if (0 == pid) {
-                runMain(timeLimit, memLimit);
+                runMain(timeLimit, memLimit, languageType);
             }
             watchRun(pid, timeLimit, memLimit, languageType);
             judgeMain(sampleOutFilePath);
@@ -436,13 +461,23 @@ private:
 
     /* 4. output the result */
     void output() {
+        tinyjson::Object object;
+        /* If CE, count = 1 */
+        int count = 0;
         for (ResultSet rs : resultSets) {
-            Logger::log(logFilePath, StringUtil::format("{ \n\tResult Code: %d,\n\
-                Time used: %d ms,\n\
-                Memory Used: %d kb,\n\
-                Result Info: %s\n\
-            }", rs.resultCode, rs.timeUsage, rs.memUsage, rs.resultInfo.c_str()));
+            ++count;
+            Logger::log(StringUtil::format("{ Result Code: %d, Time Used: %d ms, Memory Used: %d kb, Result Info: %s }",
+            rs.resultCode, rs.timeUsage, rs.memUsage, rs.resultInfo.c_str()));
+            tinyjson::Object sampleObject;
+            sampleObject["ResultCode"] = rs.resultCode;
+            sampleObject["TimeUsed"] = rs.timeUsage;
+            sampleObject["MemoryUsed"] = rs.memUsage;
+            sampleObject["ResultInfo"] = rs.resultInfo;
+            object[std::to_string(count)] = sampleObject;
         }
+        object["count"] = count;
+        tinyjson::Json json(object);
+        FileUtil::writeFile(resultFilePath, json.serialize());
     }
 
 };

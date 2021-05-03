@@ -9,10 +9,6 @@
 
 #include "str_util.hpp" /* for StringUtil::trim */
 
-#ifndef BUF_SIZE
-    #define BUF_SIZE BUFSIZE
-#endif
-
 class FileCompareUtil final {
 private:
     explicit FileCompareUtil() {}

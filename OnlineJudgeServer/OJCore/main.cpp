@@ -1,6 +1,6 @@
 #include "judge.hpp"
 
-int main() {  
+int main() {
     Judge judge;
     std::string code = "#include <iostream>\n\
 #include <vector>\n\

@@ -7,9 +7,11 @@ import java.util.List;
 import org.oj.dao.IClassificationDao;
 import org.oj.dao.IProblemClassificationDao;
 import org.oj.dao.IProblemDao;
+import org.oj.dao.IUserProblemDao;
 import org.oj.dao.impl.ClassificationDaoImpl;
 import org.oj.dao.impl.ProblemClassificationDaoImpl;
 import org.oj.dao.impl.ProblemDaoImpl;
+import org.oj.dao.impl.UserProblemDaoImpl;
 import org.oj.entity.Classification;
 import org.oj.entity.Problem;
 import org.oj.model.ProblemWithClassification;
@@ -20,26 +22,29 @@ public class ProblemServiceImpl implements IProblemService {
 	IProblemDao problemDao = new ProblemDaoImpl();
 	IClassificationDao classificationDao = new ClassificationDaoImpl();
 	IProblemClassificationDao problemClassificationDao = new ProblemClassificationDaoImpl();
+	IUserProblemDao userProblemDao = new UserProblemDaoImpl();
 	
 	@Override
-	public List<ProblemWithClassification> all(int page, int pageSize) throws SQLException {
+	public List<ProblemWithClassification> all(
+			String uid, int page, int pageSize, int difficulty, int classification, int status) throws SQLException {
 		List<ProblemWithClassification> problemWithClassificationList = new ArrayList<ProblemWithClassification>(); 
-		List<Problem> problemList = problemDao.findProblems(page, pageSize);
+		List<Problem> problemList = problemDao.findProblems(uid, page, pageSize, difficulty, classification, status);
 		for (Problem problem : problemList) {
-			problemWithClassificationList.add(getProblem(problem.getPid()));
+			problemWithClassificationList.add(getProblemWithClassification(uid, problem.getPid()));
 		}
 		return problemWithClassificationList;
 	}
 
 	@Override
-	public ProblemWithClassification getProblem(int id) throws SQLException {
-		Problem problem = problemDao.findProblemById(id);
+	public ProblemWithClassification getProblemWithClassification(String uid, int pid) throws SQLException {
+		Problem problem = problemDao.findProblemById(pid);
 		List<Integer> cidList = problemClassificationDao.findCidsByPid(problem.getPid());
 		List<Classification> classificationList = new ArrayList<Classification>();
 		for (int cid : cidList) {
 			classificationList.add(classificationDao.findClassificationById(cid));
 		}
-		return new ProblemWithClassification(problem, classificationList);
+		int passed = userProblemDao.findStateByUidAndPid(uid, pid);
+		return new ProblemWithClassification(problem, classificationList, passed);
 	}
 
 	@Override

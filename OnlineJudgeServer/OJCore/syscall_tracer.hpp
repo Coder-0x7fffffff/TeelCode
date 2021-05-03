@@ -1,7 +1,6 @@
 #pragma once
 
 #include <sys/reg.h> /* for ORIG_RAX */
-#include <asm-generic/unistd.h> /* for __NR_syscalls */
 #include <sys/syscall.h> /* for syscalls */
 #include <sys/ptrace.h> /* for ptrace */
 
@@ -9,10 +8,11 @@
     #define ORIG_EAX ORIG_RAX
 #endif
 
-#define NR_syscalls __NR_syscalls
+/* see <asm-generic/unistd.h> */
+#define NR_syscalls 333
 
 enum class LanguageType : int {
-    C, CPP, JAVA, PYTHON
+    C, CPP, JAVA, PYTHON2, PYTHON3
 };
 
 /* white list table for syscall */
@@ -64,7 +64,7 @@ public:
                 callCounter[LANG_JV[i]] = CALL_LIMIT;
             }
             break;
-        case LanguageType::PYTHON:
+        case LanguageType::PYTHON2: case LanguageType::PYTHON3:
             for (int i = 0; -1 != LANG_PV[i]; ++i) {
                 callCounter[LANG_PV[i]] = CALL_LIMIT;
             }

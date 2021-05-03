@@ -39,5 +39,12 @@ public class FileUtil {
 	public static void writeToFile(String filePath, String content) throws IOException {
 		writeToFile(new File(filePath), content);
 	}
-
+	
+	public static void mkdirs(String filePath) {
+		File file = new File(filePath);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+	}
+	
 }

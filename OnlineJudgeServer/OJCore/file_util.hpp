@@ -45,7 +45,17 @@ public:
             fout.close();
             return WT_SUC;
         }
-        return WT_FLT;        
+        return WT_FLT;
+    }
+
+    static int appendFile(const std::string& filePath, const std::string& content) {
+        std::ofstream fout(filePath.c_str(), std::ios::app);
+        if (fout.good()) {
+            fout.write(content.c_str(), content.length());
+            fout.close();
+            return WT_SUC;
+        }
+        return WT_FLT;
     }
 
     static int copyFile(const std::string& srcFilePath, const std::string& dstFilePath) {
@@ -82,23 +92,23 @@ public:
         return filePath + ".log";
     }
 
-    static std::string compileErrorPath(const std::string& filePath){
+    static std::string compileErrorPath(const std::string& filePath) {
         return filePath + ".compile_error";
     }
 
-    static std::string exePath(const std::string& filePath){
-        return filePath + ".exe";
+    static std::string exePath(const std::string& filePath) {
+        return filePath;
     }
 
-    static std::string stdinPath(const std::string& filePath){
+    static std::string stdinPath(const std::string& filePath) {
         return filePath + ".in";
     }
 
-    static std::string stdoutPath(const std::string& filePath){
+    static std::string stdoutPath(const std::string& filePath) {
         return filePath + ".out";
     }
 
-    static std::string stderrPath(const std::string& filePath){
+    static std::string stderrPath(const std::string& filePath) {
         return filePath + ".err";
     }
 
