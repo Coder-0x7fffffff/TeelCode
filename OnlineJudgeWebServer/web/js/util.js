@@ -20,6 +20,16 @@ function postAndWait(path,JSONdata){
     return ret
 }
 
+function postNoWait(path,JSONdata,callback){
+    let ajax = getAjax()
+    ajax.open("post",path,true)
+    ajax.setRequestHeader("Content-Type","application/json")
+    ajax.onreadystatechange = function (){
+        callback(ajax)
+    }
+    ajax.send(JSON.stringify(JSONdata))
+}
+
 function showError(msg){
     document.getElementById("err_msg").innerText=msg
     document.getElementById("err_dialog").showModal()

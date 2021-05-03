@@ -1,27 +1,62 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
 const bodyParser = require("body-parser")
-
 const server = express()
+const request = require("request")
+
+let OJServer = "http://oj.xiami.space:8080/OnlineJudge/"
+
+//request
+function httpRequest(url, method, body){
+    return new Promise((resolve, reject)=>{
+        let option ={
+            url: url,
+            method: method,
+            json: true,
+            headers: {
+                "content-type": "application/json",
+            },
+            body: body
+        }
+        request(option, function(error, response, body) {
+            if(error != null){
+                resolve(error)
+                return
+            }
+            if (response.statusCode === 200) {
+                resolve(body)
+            }else{
+                resolve({err:response.statusCode, body:body})
+            }
+        });
+    });
+}
 
 //server contact
-function getUserInfo(oldToken){
+function checkUser(oldToken){
     let img = null
     let online=false
-    let userName=null
+    let id = null
+    let username=null
     let token=null
     let err=null
+    let question=null
+    let answer=null
     //get user info
     if(oldToken === "123456789"){
         online=true
-        userName="xiami"
+        id="xiami"
+        username="虾米"
         token="123456789"
+        question="q"
+        answer="a"
     }
     //return
-    return {online:online, username:userName, token: token, img:img, err:err}
+    return {online:online, id:id, username:username, token: token, img:img , question:question, answer:answer, err:err}
 }
 
-function login(body){
+function login(req, res){
+    let body = req.body
     //get data
     let id = body['id']
     let password = body['password']
@@ -39,23 +74,30 @@ function login(body){
         err=null
     }else err="请输入正确的账号密码"
     //return
-    return {online:online, username:username, token: token, img:img, err:err}
+    res.send({online:online, id:id, username:username, token: token, img:img, err:err})
 }
 
-function register(body){
+function register(req, res){
+    let body = req.body
     //get data
-    let username = body['username']
+    let id = body['id']
     let password = body['password']
     let question = body['question']
     let answer = body['answer']
     //return define
     let err=null
     //register
+    let requestData = {id: id, pwd: password, problem: question, answer: answer}
+    console.log(requestData)
+    let ret = httpRequest(OJServer + "Register", "POST", requestData).then(function (r) {
+        console.log(r)
+    })
     //return
-    return {err:err}
+    res.send({err:err})
 }
 
-function queryQuestion(body){
+function queryQuestion(req, res){
+    let body = req.body
     //get data
     let problem_id = body['problem_id']
     //return define
@@ -69,10 +111,11 @@ function queryQuestion(body){
         err = "没有题号为"+problem_id.toString()+"的题目"
     }
     //return
-    return {err:err,problem:problem}
+    res.send({err:err,problem:problem})
 }
 
-function queryComments(body){
+function queryComments(req, res){
+    let body = req.body
     //get data
     let problem_id = body['problem_id']
     let page = body['page']
@@ -139,24 +182,26 @@ function queryComments(body){
         replies:[]
     }
 
-    let comments=[comment1,comment2,comment3,comment1,comment2,comment3]
-    if(problem_id!=1){
+    let comments=[comment1,comment2,comment3]
+    if(problem_id!==1){
         err = "没有题号为"+problem_id.toString()+"的题目"
     }
     //return
-    return {err:err,comments:comments}
+    res.send({err:err,comments:comments})
 }
 
-function reply(body){
+function reply(req, res){
+    let body = req.body
     //get data
 
     //return
-    return {err:null, cid:11}
+    res.send({err:null, cid:11})
 }
 
-function getUIInfo(body){
+function getUIInfo(req, res){
+    let body = req.body
     //get date
-    return {
+    let data = {
         difficulties:[
                 {
                     value:0,
@@ -208,15 +253,18 @@ function getUIInfo(body){
             }
         ]
     }
+    res.send(data)
 }
 
-function queryQuestionList(body){
+function queryQuestionList(req, res){
+    let body = req.body
+    //get data
     let page = body["page"]
     let offset = body["offset"]
     let difficulty = body["difficulty"]
     let clazz = body["class"]
     //get data
-    return {
+    let data = {
         problems:[
             {
                 problem:{
@@ -248,22 +296,93 @@ function queryQuestionList(body){
             },
         ]
     }
+    res.send(data)
 }
 
-//ejs constructor
+function run(req, res){
+    let body = req.body
+    //get data
+    let platform = body['platform']
+    let code = body['code']
+    //return
+    res.send({err:null, result:platform+"\n"+code})
+}
+
+function submit(req, res){
+    let body = req.body
+    //get data
+    let platform = body['platform']
+    let code = body['code']
+    //return
+    res.send({err:null, result:platform+"\n"+code})
+}
+
+function userinfo(req, res){
+    let body = req.body
+    //get data
+    let err=null
+    //user
+    let user = checkUser(req.cookies['token'])
+    let id = user['id']
+    let username = user['username']
+    let img = user['img']
+    let question = user['question']
+    //problems
+    let problems = []
+    for(let i=0;i<5;i++){
+        problems.push({pid:i+1,pname:"最短路径",pdiff:1})
+    }
+    //return
+    res.send({user:{id:id, username:username, img:img, question:question}, problems:problems, err:err})
+}
+
+function changePassword(req, res){
+    let body = req.body
+    //get data
+    let user = checkUser(req.cookies['token'])
+    let answer = body['answer']
+    let password = body['password']
+    let err = null
+    //judge and change
+    if(user['answer'] === answer){
+        //change password
+    }else{
+        err = "问题答案不正确"
+    }
+    //return
+    res.send({err:err})
+}
+
+function changeName(req, res){
+    let body = req.body
+    //get data
+    let err = null
+    let newName = body['name']
+    //change
+    if(newName === ""){
+        err = "用户名不能为空"
+    }
+    else if(newName === "repeat"){
+        err = "用户名重复"
+    }
+    //return
+    res.send({err:err})
+}
+
 function handleRequest(req, res, shouldOnline, callback){
     if(shouldOnline){
         //judge online
-        let user = getUserInfo(req.cookies['token'])
+        let user = checkUser(req.cookies['token'])
         if(!user["online"]){
             let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
             res.render(__dirname+"/web/login.ejs",opts)
             return
         }
     }
-    res.send(callback(req.body))
+    callback(req, res)
 }
 
+//ejs constructor
 function getPageBottom(){
     return ''+
         '       <div id="page_bottom" class="page_bottom">\n' +
@@ -276,13 +395,13 @@ function getPageBottom(){
 function getPageHeader(user){
     //get online or not with token
     let online=user['online']
-    let userName=user['username']
+    let username=user['username']
     //execute panel
     let userPanel = ""
     if(!online){
         userPanel = '<div class="list_item_right"><a href="/register" class="list_item_text">注册</a></div><div class="list_item_right"><a href="/login" class="list_item_text">登录</a></div>'
     }else{
-        userPanel = '<div class="list_item_right"><button class="logout_bnt" id="logout_bnt">退出</button></div><div class="list_item_right"><a href="/userinfo-'+userName+'" ><img class="list_item_icon" src="./img/defaut_img.jpg"/></a></div>'
+        userPanel = '<div class="list_item_right"><button class="logout_bnt" id="logout_bnt">退出</button></div><div class="list_item_right"><a href="/userinfo-'+username+'" ><img class="list_item_icon" src="./img/defaut_img.jpg"/></a></div>'
     }
     //execute header
     return '' +
@@ -290,8 +409,8 @@ function getPageHeader(user){
         '        <div id="header_panel" class="main_detail">\n' +
         '            <nav class="nav_list">\n' +
         '                <img src="../img/icon.png" class="list_item_icon"/>\n' +
-        '                <div class="list_item"><a href="/" class="list_item_text">练习</a></div>\n' +
-        '                <div class="list_item"><a href="/" class="list_item_text">竞赛</a></div>\n' +
+        '                <div class="list_item"><a href="/" class="list_item_text">首页</a></div>\n' +
+        //'                <div class="list_item"><a href="/" class="list_item_text">竞赛</a></div>\n' +
         '            </nav>\n' +
         '            <nav id="user_panel" class="nav_list_right">' + userPanel + '</nav>\n' +
         '        </div>\n' +
@@ -356,7 +475,7 @@ function start(port){
     //get
     server.get("/",(req, res)=>{
         //judge online
-        let user = getUserInfo(req.cookies['token'])
+        let user = checkUser(req.cookies['token'])
         if(!user["online"]){
             let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
             res.render(__dirname+"/web/login.ejs",opts)
@@ -366,29 +485,30 @@ function start(port){
         res.render(__dirname+"/web/index.ejs",opts)
     })
     server.get("/register",(req, res)=>{
-        let user = getUserInfo(req.cookies['token'])
+        let user = checkUser(req.cookies['token'])
         let opts = getPageFrame(user, ['./js/register.js'], ['./css/register.css'], {})
         res.render(__dirname+"/web/register.ejs",opts)
     })
     server.get("/login",(req, res)=>{
-        let user = getUserInfo(req.cookies['token'])
+        let user = checkUser(req.cookies['token'])
         let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
         res.render(__dirname+"/web/login.ejs",opts)
     })
     server.get("/userinfo-*",(req, res)=>{
         //judge online
-        let user = getUserInfo(req.cookies['token'])
+        let user = checkUser(req.cookies['token'])
         if(!user["online"]){
             let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
             res.render(__dirname+"/web/login.ejs",opts)
             return
         }
-        let opts = getPageFrame(user, [], [], {})
+        //render
+        let opts = getPageFrame(user, ['./js/userinfo.js'], ['./css/userinfo.css'], {})
         res.render(__dirname+"/web/userinfo.ejs",opts)
     })
     server.get("/problems-*",(req, res)=>{
         //judge online
-        let user = getUserInfo(req.cookies['token'])
+        let user = checkUser(req.cookies['token'])
         if(!user["online"]){
             let opts = getPageFrame(user, ['./js/login.js'], ['./css/login.css'], {})
             res.render(__dirname+"/web/login.ejs",opts)
@@ -439,6 +559,21 @@ function start(port){
     })
     server.post('/queryQuestionList', (req, res)=>{
         handleRequest(req, res, true, queryQuestionList)
+    })
+    server.post('/run', (req, res)=>{
+        handleRequest(req, res, true, run)
+    })
+    server.post('/submit', (req, res)=>{
+        handleRequest(req, res, true, submit)
+    })
+    server.post('/userinfo', (req, res)=>{
+        handleRequest(req, res, true, userinfo)
+    })
+    server.post('/changePassword', (req, res)=>{
+        handleRequest(req, res, true, changePassword)
+    })
+    server.post('/changeName', (req, res)=>{
+        handleRequest(req, res, true, changeName)
     })
     //listen
     server.listen(port,()=>{

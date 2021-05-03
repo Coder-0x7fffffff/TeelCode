@@ -1,7 +1,7 @@
 class RegisterWebModel{
     constructor() {
         document.getElementById("register_bnt").addEventListener('click', ()=>{
-            let username = document.getElementById("username_input").value
+            let id = document.getElementById("username_input").value
             let password = document.getElementById("password_input").value
             let confirm_password = document.getElementById("confirm_password_input").value
             let question = document.getElementById("question_input").value
@@ -13,7 +13,7 @@ class RegisterWebModel{
             let ajax = getAjax()
             ajax.open("post","/register",false)
             ajax.setRequestHeader("Content-Type","application/json")
-            ajax.send(JSON.stringify({username:username,password:password,question:question,answer:answer}))
+            ajax.send(JSON.stringify({id:id,password:password,question:question,answer:answer}))
             showError(ajax.responseText)
         })
     }

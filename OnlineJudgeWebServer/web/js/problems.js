@@ -2,6 +2,7 @@ class ProblemsWebModel{
 
     #editor = null
     #lang2mode = {"java":"text/x-java", "c":"text/x-csrc", "c++":"text/x-c++src", "python2":"text/x-python", "python3":"text/x-python"}
+    #lang = null
     #question_id = null
     replyContext = null
 
@@ -25,6 +26,7 @@ class ProblemsWebModel{
         let main_panel = document.getElementById("main_panel")
         let reply_confirm = document.getElementById("reply_confirm")
         let reply_cancel = document.getElementById("reply_cancel")
+        let comments_panel_reply_bnt = document.getElementById("comments_panel_reply_bnt")
         //get used height
         let style_ph = window.getComputedStyle(page_header)
         let style_gh = window.getComputedStyle(gap_hr)
@@ -65,6 +67,7 @@ class ProblemsWebModel{
         comments_detail.addEventListener("click", this.#clickOnCommentsPanel)//listener
         reply_confirm.addEventListener("click", this.#replyConfirm)
         reply_cancel.addEventListener("click", this.#replyCancel)
+        comments_panel_reply_bnt.addEventListener("click", this.commentReply)
         //load code panel
         let language_selet = document.getElementById("language_select")
         let langs = Object.keys(this.#lang2mode)
@@ -83,15 +86,30 @@ class ProblemsWebModel{
         let submit_bnt = document.getElementById("submit_bnt")
         run_bnt.addEventListener("click",function (){
             that.showAndWaitOutput()
-            //run
-            let result = "run result"
-            that.showOutput(result)
+            postNoWait("/run",{token:getCookie("token"), platform:that.#lang,code:that.#editor.getValue()},function (ajax){
+                if (ajax.readyState===4 && ajax.status===200){
+                    let ret = JSON.parse(ajax.responseText)
+                    if(ret['err']==null){
+                        that.showOutput(ret['result'])
+                    }else{
+                        that.showOutput(ret['err'])
+                    }
+                }
+            })
         })
         submit_bnt.addEventListener("click",function (){
             that.showAndWaitOutput()
-            //submit
-            let result = "submit result"
-            that.showOutput(result)
+            /*submit*/
+            postNoWait("/submit",{token:getCookie("token"), platform:that.#lang,code:that.#editor.getValue()},function (ajax){
+                if (ajax.readyState===4 && ajax.status===200){
+                    let ret = JSON.parse(ajax.responseText)
+                    if(ret['err']==null){
+                        that.showOutput(ret['result'])
+                    }else{
+                        that.showOutput(ret['err'])
+                    }
+                }
+            })
         })
     }
 
@@ -126,7 +144,7 @@ class ProblemsWebModel{
             '                    <button id="'+comment_share_bnt_id_str+'" class="comment_bnt">分享</button>\n' +
             '                    <div id="'+comment_replies_id_str+'" class="comment_replies"></div>\n' +
             '                </div>'
-        coments_detail.innerHTML += commentHtml
+        coments_detail.innerHTML = commentHtml + coments_detail.innerHTML
         let comment_replies = document.getElementById(comment_replies_id_str)
         comment_replies.style.display="none"
         if(replies.length>0){
@@ -213,6 +231,19 @@ class ProblemsWebModel{
         }
     }
 
+    commentReply(){
+        model.replyContext = {
+            problem_id:model.#question_id,
+            username:getCookie("username"),
+            time:null,
+            parent_comment_id:-1,
+            reply_username:null,
+            detail:null
+        }
+        let reply_dialog = document.getElementById("reply_dialog")
+        reply_dialog.showModal()
+    }
+
     //editor control
     getCode(){
         console.log(this.#editor.getValue())
@@ -220,6 +251,7 @@ class ProblemsWebModel{
 
     setLanguage(lang){
         let that = this
+        this.#lang = lang
         let editorOpts= {
             mode: this.#lang2mode[lang],
             smartIndent: true,
@@ -251,7 +283,7 @@ class ProblemsWebModel{
         let ret = postAndWait("/reply",model.replyContext)
         if(ret['err'] == null){
             //insert comment
-            if(model.replyContext['parent_comment_id'] == -1){
+            if(model.replyContext['parent_comment_id'] === -1){
                 //top level commewnt
                 let cid = ret['cid'].toString()
                 let username = model.replyContext['username']
@@ -281,7 +313,7 @@ class ProblemsWebModel{
                     '                    <button id="'+comment_share_bnt_id_str+'" class="comment_bnt">分享</button>\n' +
                     '                    <div id="'+comment_replies_id_str+'" class="comment_replies"></div>\n' +
                     '                </div>'
-                coments_detail.innerHTML = commentHtml + coments_detail.innerText
+                coments_detail.innerHTML = commentHtml + coments_detail.innerHTML
             }else{
                 //reply
                 let cid = model.replyContext['parent_comment_id'].toString()

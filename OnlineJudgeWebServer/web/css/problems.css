@@ -116,8 +116,17 @@ body{
 }
 
 .comments_panel_bnt{
+    float: right;
+    margin-right: 5px;
     margin-top: 0.5%;
     height: 80%;
+}
+
+.comments_panel_more_bnt{
+    margin-left: 45%;
+    margin-top: 0.5%;
+    width: 10%;
+    height: 4%;
 }
 
 .comment_container{
