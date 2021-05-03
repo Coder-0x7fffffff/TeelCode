@@ -16,7 +16,7 @@ public class NewUserServiceImpl implements INewUserService {
 		OJUser ojuser = ojuserDao.findOJUserById(id);
 		if (null == ojuser) {
 			if (1 == ojuserDao.insertOJUser(id, name)) {
-				if (sex > 0) {
+				if (sex >= 0) {
 					ojuserDao.updateOJUserSex(id, sex);
 				}
 				if (null != dscp) {

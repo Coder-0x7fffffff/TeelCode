@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.common.Global;
 import org.oj.service.IProblemService;
 import org.oj.service.impl.ProblemServiceImpl;
 import org.oj.util.WebUtil;
@@ -56,7 +57,31 @@ public class AddClassification extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = paramterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			int id = Integer.parseInt(paramterMap.get("id"));
+			String name = paramterMap.get("name");
+			IProblemService problemService = new ProblemServiceImpl();
+			try {
+				boolean result = problemService.addClassification(id, name);
+				response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        Map<String, Object> jsonMap = new HashMap<String, Object>();
+		        jsonMap.put("result", result);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/* */
+		}
 	}
 
 }

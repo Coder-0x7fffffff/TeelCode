@@ -1,11 +1,12 @@
 package org.oj.service;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 public interface IAlterPasswordService {
 
 	public boolean verify(String id, String answer) throws SQLException;
 	
-	public boolean alter(String id, String pwd) throws SQLException;
+	public boolean alter(String id, String pwd) throws SQLException, NoSuchAlgorithmException;
 	
 }

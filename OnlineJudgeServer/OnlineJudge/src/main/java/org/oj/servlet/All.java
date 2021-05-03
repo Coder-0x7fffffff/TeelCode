@@ -78,7 +78,36 @@ public class All extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = paramterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			String uid = Global.getToken(token).uid;
+			int page = Integer.parseInt(paramterMap.get("page"));
+			int pageSize = Integer.parseInt(paramterMap.get("offset"));
+			int difficulty = Integer.parseInt(paramterMap.get("difficulty"));
+			int classification = Integer.parseInt(paramterMap.get("class"));
+			int status = Integer.parseInt(paramterMap.get("status"));
+			IProblemService problemService = new ProblemServiceImpl();
+			try {
+				List<ProblemWithClassification> problemWithClassificationList = problemService.all(
+						uid, page, pageSize, difficulty, classification, status);
+				response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        Map<String, Object> jsonMap = new HashMap<String, Object>();
+		        jsonMap.put("result", problemWithClassificationList);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/* */
+		}
 	}
 
 }

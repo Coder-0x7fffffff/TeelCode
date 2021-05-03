@@ -2,6 +2,7 @@ package org.oj.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,8 @@ public class Login extends HttpServlet {
 	        out.print(json);
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -62,7 +65,30 @@ public class Login extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String id = paramterMap.get("id");
+		String pwd = paramterMap.get("pwd");
+		ILoginService loginService = new LoginServiceImpl();
+		try {
+			boolean result = loginService.login(id, pwd);
+			response.setContentType("text/json; charset=utf-8");
+	        PrintWriter out = response.getWriter();
+	        Map<String, Object> jsonMap = new HashMap<String, Object>();
+	        jsonMap.put("result", result);
+	        String token = null;
+	        if (result) {
+	        	token = Global.getOrCreateToken(id).token;
+	        }
+	        jsonMap.put("token", token);
+	        String json = JSON.toJSONString(jsonMap);
+	        out.print(json);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -18,7 +18,7 @@ public class UpdateUserServiceImpl implements IUpdateUserService {
 			if (null != name) {
 				ojuserDao.updateOJUserName(id, name);
 			}
-			if (sex > 0) {
+			if (sex >= 0) {
 				ojuserDao.updateOJUserSex(id, sex);
 			}
 			if (null != dscp) {

@@ -1,5 +1,6 @@
 package org.oj.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.common.Global;
 import org.oj.entity.Classification;
 import org.oj.service.IProblemService;
 import org.oj.service.impl.ProblemServiceImpl;
@@ -57,6 +59,9 @@ public class AddProblem extends HttpServlet {
 			response.setContentType("text/json; charset=utf-8");
 	        PrintWriter out = response.getWriter();
 	        Map<String, Object> jsonMap = new HashMap<String, Object>();
+	        if (result) {
+	        	new File("/usr/local/oj/ojsample/" + id).mkdirs();
+	        }
 	        jsonMap.put("result", result);
 	        String json = JSON.toJSONString(jsonMap);
 	        out.print(json);
@@ -69,7 +74,44 @@ public class AddProblem extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = paramterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			int id = Integer.parseInt(paramterMap.get("id"));
+			String name = paramterMap.get("name");
+			int difficulty = Integer.parseInt(paramterMap.get("difficulty"));
+			String dscp = paramterMap.get("dscp");
+			String inputs = paramterMap.get("inputs");
+			String outputs = paramterMap.get("outputs");
+			String classificationString = paramterMap.get("classification");
+			String[] classificationNames = classificationString.split(",");
+			IProblemService problemService = new ProblemServiceImpl();
+			try {
+				List<Classification> classificationList = new ArrayList<Classification>();
+				for (String classificationName : classificationNames) {
+					classificationList.add(problemService.getClassification(classificationName));
+				}
+				boolean result = problemService.addProblem(id, name, difficulty, 0, 0, dscp, inputs, outputs, classificationList);
+				response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        Map<String, Object> jsonMap = new HashMap<String, Object>();
+		        if (result) {
+		        	new File("/usr/local/oj/ojsample/" + id).mkdirs();
+		        }
+		        jsonMap.put("result", result);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+		} else {
+			/* */
+		}
 	}
 
 }

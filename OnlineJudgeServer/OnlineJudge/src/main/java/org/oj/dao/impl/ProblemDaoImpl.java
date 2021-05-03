@@ -60,8 +60,8 @@ public class ProblemDaoImpl implements IProblemDao {
 		if (0 != difficulty) {
 			if (!flag) {
 				sqlStringBuffer.append(" WHERE");
-			}
-			else {
+				flag = true;
+			} else {
 				sqlStringBuffer.append(" AND");
 			}
 			sqlStringBuffer.append(" p_difficulty=?");
@@ -70,23 +70,27 @@ public class ProblemDaoImpl implements IProblemDao {
 		if (0 != classification) {
 			if (!flag) {
 				sqlStringBuffer.append(" WHERE");
-			}
-			else {
+				flag = true;
+			} else {
 				sqlStringBuffer.append(" AND");
 			}
 			sqlStringBuffer.append(" p_id IN(SELECT p_id FROM Classification WHERE c_id=?)");
 			paramsList.add(classification);
 		}
-		if (0 != status) {
+		if (-1 != status) {
 			if (!flag) {
 				sqlStringBuffer.append(" WHERE");
-			}
-			else {
+				flag = true;
+			} else {
 				sqlStringBuffer.append(" AND");
 			}
-			sqlStringBuffer.append(" p_id IN(SELECT p_id FROM UserProblem WHERE u_id=? AND p_state=?)");
+			// unfinished
+			if (0 == status) {
+				sqlStringBuffer.append(" p_id NOT IN(SELECT p_id FROM UserProblem WHERE u_id=? AND p_state=1)");
+			} else /* 1 == status */ {
+				sqlStringBuffer.append(" p_id IN(SELECT p_id FROM UserProblem WHERE u_id=? AND p_state=1)");
+			}
 			paramsList.add(uid);
-			paramsList.add(status);
 		}
 		sqlStringBuffer.append(" LIMIT ?, ?");
 		paramsList.add((page - 1) * pageSize);

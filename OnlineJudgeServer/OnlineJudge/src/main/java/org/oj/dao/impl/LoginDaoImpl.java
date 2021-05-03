@@ -21,7 +21,8 @@ public class LoginDaoImpl implements ILoginDao {
 				String upwd = resultSet.getString(2);
 				String uproblem = resultSet.getString(3);
 				String uanswer = resultSet.getString(4);
-				loginList.add(new Login(uid, upwd, uproblem, uanswer));
+				int utype = resultSet.getInt(5);
+				loginList.add(new Login(uid, upwd, uproblem, uanswer, utype));
 			}
 			return loginList;
 		}
@@ -40,7 +41,7 @@ public class LoginDaoImpl implements ILoginDao {
 	
 	@Override
 	public int insertLogin(String id, String pwd, String problem, String answer) throws SQLException {
-		String sql = "INSERT INTO Login VALUES(?,?,?,?)";
+		String sql = "INSERT INTO Login(u_id, u_pwd, u_problem, u_answer) VALUES(?,?,?,?)";
 		Object[] params = { id, pwd, problem, answer };
 		return DBUtil.update(sql, params);
 	}
@@ -55,7 +56,7 @@ public class LoginDaoImpl implements ILoginDao {
 	@Override
 	public int updateLoginPwd(String id, String pwd) throws SQLException{
 		String sql = "UPDATE Login SET u_pwd=? WHERE u_id=?";
-		Object[] params = { id, pwd };
+		Object[] params = { pwd, id };
 		return DBUtil.update(sql, params);
 	}
 

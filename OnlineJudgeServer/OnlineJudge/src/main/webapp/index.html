@@ -5,15 +5,87 @@
 <title>Test</title>
 </head>
 <body>
-测试注册:
+测试注册(OK):
 	<form method="post" action="Register">
-		<input type="text" name="id">
-		<input type="text" name="pwd">
-		<input type="text" name="problem">
-		<input type="text" name="answer">
+		id=<input type="text" name="id"><br/>
+		pwd=<input type="text" name="pwd"><br/>
+		problem=<input type="text" name="problem"><br/>
+		answer=<input type="text" name="answer"><br/>
 		<input type="submit" value="提交">
 	</form>
-<br/>
-测试登陆:
+测试登陆(OK):
+	<form method="post" action="Login">
+		id=<input type="text" name="id"><br/>
+		pwd=<input type="text" name="pwd"><br/>
+		<input type="submit" value="登陆">
+	</form>
+测试创建用户(OK):
+	<form method="post" action="NewUser">
+		token=<input type="text" name="token"><br/>
+		name=<input type="text" name="name"><br/>
+		sex=<input type="text" name="sex"><br/>
+		dscp=<input type="text" name="dscp"><br/>
+		<input type="submit" value="创建用户">
+	</form>
+测试修改用户信息(OK):
+	<form method="post" action="UpdateUser">
+		token=<input type="text" name="token"><br/>
+		name=<input type="text" name="name"><br/>
+		sex=<input type="text" name="sex"><br/>
+		dscp=<input type="text" name="dscp"><br/>
+		<input type="submit" value="修改用户信息">
+	</form>
+测试修改密码(OK):
+	<form method="post" action="AlterPassword">
+		token=<input type="text" name="token"><br/>
+		answer=<input type="text" name="answer"><br/>
+		newpwd=<input type="text" name="newpwd"><br/>
+		<input type="submit" value="修改密码">
+	</form>
+测试获取所有题目(OK):
+	<form method="post" action="All">
+		token=<input type="text" name="token"><br/>
+		page=<input type="text" name="page"><br/>
+		offset=<input type="text" name="offset"><br/>
+		class=<input type="text" name="class"><br/>
+		difficulty=<input type="text" name="difficulty"><br/>
+		status=<input type="text" name="status"><br/>
+		<input type="submit" value="获取所有题目">
+	</form>
+测试添加题目(OK):
+	<form method="post" action="AddProblem">
+		token=<input type="text" name="token"><br/>
+		id=<input type="text" name="id"><br/>
+		name=<input type="text" name="name"><br/>
+		difficulty=<input type="text" name="difficulty"><br/>
+		dscp=<input type="text" name="dscp"><br/>
+		inputs=<input type="text" name="inputs"><br/>
+		outputs=<input type="text" name="outputs"><br/>
+		classification=<input type="text" name="classification"><br/>
+		<input type="submit" value="添加题目">
+	</form>
+测试添加分类(OK):
+	<form method="post" action="AddClassification">
+		token=<input type="text" name="token"><br/>
+		id=<input type="text" name="id"><br/>
+		name=<input type="text" name="name"><br/>
+		<input type="submit" value="添加分类">
+	</form>
+测试获取所有分类(OK):
+	<form method="post" action="GetClassifications">
+		token=<input type="text" name="token"><br/>
+		<input type="submit" value="获取分类">
+	</form>
+测试获取单个题目(OK):
+	<form method="post" action="GetProblem">
+		token=<input type="text" name="token"><br/>
+		id=<input type="text" name="id"><br/>
+		<input type="submit" value="获取题目">
+	</form>
+测试获取所有难度(OK):
+	<form method="post" action="GetDifficulties">
+		token=<input type="text" name="token"><br/>
+		<input type="submit" value="获取难度">
+	</form>
 </body>
 </html>

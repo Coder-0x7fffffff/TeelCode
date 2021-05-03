@@ -1,5 +1,6 @@
 package org.oj.dao.impl;
 
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ public class OJUserDaoImpl implements IOJUserDao {
 				String uname = resultSet.getString(2);
 				int usex = resultSet.getInt(3);
 				String udscp = resultSet.getString(4);
-				ojuserList.add(new OJUser(uid, uname, usex, udscp));	
+				Blob uimg = resultSet.getBlob(5);
+				ojuserList.add(new OJUser(uid, uname, usex, udscp, uimg));	
 			}
 			return ojuserList;
 		}

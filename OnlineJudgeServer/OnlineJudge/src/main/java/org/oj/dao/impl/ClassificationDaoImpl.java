@@ -49,7 +49,7 @@ public class ClassificationDaoImpl implements IClassificationDao {
 	@Override
 	public List<Classification> findClassifications() throws SQLException {
 		String sql = "SELECT * FROM Classification";
-		return (List<Classification>) DBUtil.query(sql, null, new SelectResultHandler());
+		return (List<Classification>) DBUtil.query(sql, null, SELECT_RESULT_HANDLER);
 	}
 	
 	@Override

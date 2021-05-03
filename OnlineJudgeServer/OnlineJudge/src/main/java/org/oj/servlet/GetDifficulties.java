@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.common.Global;
+import org.oj.util.WebUtil;
+
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -48,7 +51,28 @@ public class GetDifficulties extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = paramterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			response.setContentType("text/json; charset=utf-8");
+	        PrintWriter out = response.getWriter();
+	        Map<String, Object> jsonMap = new HashMap<String, Object>();
+	        Map<Integer, String> difficultMap = new HashMap<Integer, String>();
+	        difficultMap.put(0, "全部");
+	        difficultMap.put(1, "简单");
+	        difficultMap.put(2, "中等");
+	        difficultMap.put(3, "困难");
+	        jsonMap.put("result", difficultMap);
+	        String json = JSON.toJSONString(jsonMap);
+	        out.print(json);
+		} else {
+			/* */
+		}
 	}
 
 }

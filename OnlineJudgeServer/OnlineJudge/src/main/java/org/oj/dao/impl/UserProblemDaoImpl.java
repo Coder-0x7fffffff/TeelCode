@@ -32,7 +32,8 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 	public int findStateByUidAndPid(String uid, int pid) throws SQLException {
 		String sql = "SELECT * FROM UserProblem WHERE u_id=? AND p_id=?";
 		Object[] params = { uid, pid };
-		return ((List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER)).get(0).getPstate();
+		List<UserProblem> userProblemList = (List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
+		return userProblemList.isEmpty() ? -1 : ((List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER)).get(0).getPstate();
 	}
 	
 }

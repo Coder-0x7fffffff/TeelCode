@@ -2,6 +2,7 @@ package org.oj.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,8 @@ public class Register extends HttpServlet {
 	        out.print(json);
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -58,7 +61,27 @@ public class Register extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String id = paramterMap.get("id");
+		String pwd = paramterMap.get("pwd");
+		String problem = paramterMap.get("problem");
+		String answer = paramterMap.get("answer");
+		IRegisterService registerService = new RegisterServiceImpl();
+		try {
+			boolean result = registerService.register(id, pwd, problem, answer);
+			response.setContentType("text/json; charset=utf-8");
+	        PrintWriter out = response.getWriter();
+	        Map<String, Object> jsonMap = new HashMap<String, Object>();
+	        jsonMap.put("result", result);
+	        String json = JSON.toJSONString(jsonMap);
+	        out.print(json);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

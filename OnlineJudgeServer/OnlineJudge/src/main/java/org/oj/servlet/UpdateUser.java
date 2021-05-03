@@ -59,7 +59,7 @@ public class UpdateUser extends HttpServlet {
 				e.printStackTrace();
 			}
 		} else {
-			/* reject this request */
+			/* */
 		}
 	}
 
@@ -67,7 +67,36 @@ public class UpdateUser extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = paramterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			String name = paramterMap.get("name");
+			int sex = -1;
+			String psex = paramterMap.get("sex");
+			if (null != psex) {
+				sex = Integer.parseInt(psex);
+			}
+			String dscp = paramterMap.get("dscp");
+			IUpdateUserService updateUserService = new UpdateUserServiceImpl();
+			try {
+				boolean result = updateUserService.updateUser(Global.getToken(token).uid, name, sex, dscp);
+				response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        Map<String, Object> jsonMap = new HashMap<String, Object>();
+		        jsonMap.put("result", result);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/* */
+		}
 	}
 
 }
