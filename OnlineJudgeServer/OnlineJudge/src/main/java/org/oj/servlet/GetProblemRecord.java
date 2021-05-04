@@ -2,7 +2,8 @@ package org.oj.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -12,37 +13,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
+import org.oj.service.IRecordService;
+import org.oj.service.impl.RecordServiceImpl;
 import org.oj.util.WebUtil;
+import org.oj.entity.Record;
 
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class GetDifficulties
+ * Servlet implementation class GetProblemRecord
  */
-@WebServlet("/GetDifficulties")
-public class GetDifficulties extends HttpServlet {
+@WebServlet("/GetProblemRecord")
+public class GetProblemRecord extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetDifficulties() {
+    public GetProblemRecord() {
         super();
+        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("text/json; charset=utf-8");
-        PrintWriter out = response.getWriter();
-        Map<String, String> difficultMap = new HashMap<String, String>();
-        difficultMap.put("0", "全部");
-        difficultMap.put("1", "简单");
-        difficultMap.put("2", "中等");
-        difficultMap.put("3", "困难");
-        String json = JSON.toJSONString(difficultMap);
-        out.print(json);
+		// response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
@@ -57,15 +54,23 @@ public class GetDifficulties extends HttpServlet {
 			token = paramterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			response.setContentType("text/json; charset=utf-8");
-	        PrintWriter out = response.getWriter();
-	        Map<String, String> difficultMap = new HashMap<String, String>();
-	        difficultMap.put("0", "全部");
-	        difficultMap.put("1", "简单");
-	        difficultMap.put("2", "中等");
-	        difficultMap.put("3", "困难");
-	        String json = JSON.toJSONString(difficultMap);
-	        out.print(json);
+	        try {
+	        	int pid = Integer.parseInt(paramterMap.get("pid"));
+	        	String uid = paramterMap.get("uid");
+	        	IRecordService recordService = new RecordServiceImpl();
+	        	List<Record> recordList = null;
+	        	if (null == uid || uid.isEmpty()) {
+	        		recordList = recordService.getRecord(pid);
+	        	} else {
+	        		recordList = recordService.getRecord(pid, uid);
+	        	}
+		        String json = JSON.toJSONString(recordList);
+		        response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		} else {
 			/* */
 		}

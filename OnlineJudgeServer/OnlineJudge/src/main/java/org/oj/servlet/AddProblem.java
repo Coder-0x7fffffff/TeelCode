@@ -17,7 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
 import org.oj.entity.Classification;
+import org.oj.service.IClassificationService;
 import org.oj.service.IProblemService;
+import org.oj.service.impl.ClassificationServiceImpl;
 import org.oj.service.impl.ProblemServiceImpl;
 import org.oj.util.WebUtil;
 
@@ -49,11 +51,12 @@ public class AddProblem extends HttpServlet {
 		String outputs = WebUtil.decode(request.getParameter("outputs"));
 		String classificationStr = WebUtil.decode(request.getParameter("classification"));
 		String[] classificationNames = classificationStr.split(",");
+		IClassificationService classificationService = new ClassificationServiceImpl();
 		IProblemService problemService = new ProblemServiceImpl();
 		try {
 			List<Classification> classificationList = new ArrayList<Classification>();
 			for (String classificationName : classificationNames) {
-				classificationList.add(problemService.getClassification(classificationName));
+				classificationList.add(classificationService.getClassification(classificationName));
 			}
 			boolean result = problemService.addProblem(id, name, difficulty, 0, 0, dscp, inputs, outputs, classificationList);
 			response.setContentType("text/json; charset=utf-8");
@@ -82,20 +85,23 @@ public class AddProblem extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int id = Integer.parseInt(parameterMap.get("id"));
-			String name = parameterMap.get("name");
-			int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
-			String dscp = parameterMap.get("dscp");
-			String inputs = parameterMap.get("inputs");
-			String outputs = parameterMap.get("outputs");
-			String classificationString = parameterMap.get("classification");
-			String[] classificationNames = classificationString.split(",");
-			IProblemService problemService = new ProblemServiceImpl();
 			try {
+				int id = Integer.parseInt(parameterMap.get("id"));
+				String name = parameterMap.get("name");
+				int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
+				String dscp = parameterMap.get("dscp");
+				String inputs = parameterMap.get("inputs");
+				String outputs = parameterMap.get("outputs");
 				List<Classification> classificationList = new ArrayList<Classification>();
-				for (String classificationName : classificationNames) {
-					classificationList.add(problemService.getClassification(classificationName));
+				String classificationString = parameterMap.get("classification");
+				if (null != classificationString) {
+					IClassificationService classificationService = new ClassificationServiceImpl();
+					String[] classificationNames = classificationString.split(",");
+					for (String classificationName : classificationNames) {
+						classificationList.add(classificationService.getClassification(classificationName));
+					}
 				}
+				IProblemService problemService = new ProblemServiceImpl();
 				boolean result = problemService.addProblem(id, name, difficulty, 0, 0, dscp, inputs, outputs, classificationList);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

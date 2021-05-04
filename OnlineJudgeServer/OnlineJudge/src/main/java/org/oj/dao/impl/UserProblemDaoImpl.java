@@ -38,6 +38,14 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
+	public List<UserProblem> findUserProblem(String uid) throws SQLException {
+		String sql = "SELECT * FROM UserProblem WHERE u_id=?";
+		Object[] params = { uid };
+		return (List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
+	}
+	
+	@Override
 	public boolean insertUserProblem(String uid, int pid, int pstate) throws SQLException {
 		String sql = "INSERT INTO UserProblem VALUES(?,?,?)";
 		Object[] params = { uid, pid, pstate };

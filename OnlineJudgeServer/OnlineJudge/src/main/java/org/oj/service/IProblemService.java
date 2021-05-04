@@ -16,11 +16,7 @@ public interface IProblemService {
 	public boolean addProblem(int id, String name, int difficulty, int pass, int submit, String dscp, String inputs,
 			String outputs, List<Classification> classificationList) throws SQLException;
 	
-	public boolean addClassification(int id, String name) throws SQLException;
-	
-	public Classification getClassification(String name) throws SQLException;
-	
-	public List<Classification> getClassifications() throws SQLException;
+	public boolean deleteProblem(int id) throws SQLException;
 	
 	public int getProblemCount() throws SQLException;
 	

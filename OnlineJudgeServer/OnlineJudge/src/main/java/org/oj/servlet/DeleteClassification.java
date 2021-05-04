@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
-import org.oj.entity.Classification;
 import org.oj.service.IClassificationService;
 import org.oj.service.impl.ClassificationServiceImpl;
 import org.oj.util.WebUtil;
@@ -22,16 +20,16 @@ import org.oj.util.WebUtil;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class GetClassifications
+ * Servlet implementation class DeleteClassification
  */
-@WebServlet("/GetClassifications")
-public class GetClassifications extends HttpServlet {
+@WebServlet("/DeleteClassification")
+public class DeleteClassification extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetClassifications() {
+    public DeleteClassification() {
         super();
     }
 
@@ -39,18 +37,7 @@ public class GetClassifications extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		IClassificationService classificationService = new ClassificationServiceImpl();
-		try {
-			List<Classification> classificationList = classificationService.getClassifications();
-			response.setContentType("text/json; charset=utf-8");
-	        PrintWriter out = response.getWriter();
-	        Map<String, Object> jsonMap = new HashMap<String, Object>();
-	        jsonMap.put("result", classificationList);
-	        String json = JSON.toJSONString(jsonMap);
-	        out.print(json);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} 
+		// response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
@@ -65,13 +52,14 @@ public class GetClassifications extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
+			int cid = Integer.parseInt(parameterMap.get("id"));
 			IClassificationService classificationService = new ClassificationServiceImpl();
 			try {
-				List<Classification> classificationList = classificationService.getClassifications();
+				boolean result = classificationService.deleteClassification(cid);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
 		        Map<String, Object> jsonMap = new HashMap<String, Object>();
-		        jsonMap.put("result", classificationList);
+		        jsonMap.put("result", result);
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
 			} catch (SQLException e) {

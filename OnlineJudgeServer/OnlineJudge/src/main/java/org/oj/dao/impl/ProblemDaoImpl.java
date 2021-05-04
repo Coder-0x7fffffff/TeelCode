@@ -112,7 +112,9 @@ public class ProblemDaoImpl implements IProblemDao {
 
 	@Override
 	public boolean deleteProblem(int id) throws SQLException {
-		return false;
+		String sql = "DELETE FROM Problem WHERE p_id=?";
+		Object[] params = { id };
+		return 1 == DBUtil.update(sql, params);
 	}
 
 	@Override

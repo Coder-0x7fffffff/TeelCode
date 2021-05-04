@@ -61,26 +61,17 @@ public class ProblemServiceImpl implements IProblemService {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean addClassification(int id, String name) throws SQLException {
-		return classificationDao.insertClassification(id, name);
-	}
 	
-	@Override
-	public Classification getClassification(String name) throws SQLException {
-		return classificationDao.findClassificationByName(name);
+	public boolean deleteProblem(int id) throws SQLException {
+		return problemDao.deleteProblem(id);
 	}
 
 	@Override
-	public List<Classification> getClassifications() throws SQLException {
-		return classificationDao.findClassifications();
-	}
-
 	public int getProblemCount() throws SQLException {
 		return problemDao.getProblemCount();
 	}
 	
+	@Override
 	public int getNextProblemId() throws SQLException {
 		return problemDao.getNextProblemId();
 	}

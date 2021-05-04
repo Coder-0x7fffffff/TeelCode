@@ -2,15 +2,15 @@ package org.oj.model;
 
 public class UserModel {
 
-	String uid;
-	String token;
-	String name;
-	int sex;
-	String dscp;
-	String question;
-	String answer;
-	String img;
-	int isAdmin;
+	private String uid;
+	private String token;
+	private String name;
+	private int sex;
+	private String dscp;
+	private String question;
+	private String answer;
+	private String img;
+	private int isAdmin;
 	
 	public UserModel(String uid, String token, String name, int sex, String dscp, String question, String answer,
 			String img, int isAdmin) {

@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
-import org.oj.service.IProblemService;
-import org.oj.service.impl.ProblemServiceImpl;
+import org.oj.service.IClassificationService;
+import org.oj.service.impl.ClassificationServiceImpl;
 import org.oj.util.WebUtil;
 
 import com.alibaba.fastjson.JSON;
@@ -39,9 +39,9 @@ public class AddClassification extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int id = Integer.parseInt(request.getParameter("id"));
 		String name = WebUtil.decode(request.getParameter("name"));
-		IProblemService problemService = new ProblemServiceImpl();
+		IClassificationService classificationService = new ClassificationServiceImpl();
 		try {
-			boolean result = problemService.addClassification(id, name);
+			boolean result = classificationService.addClassification(id, name);
 			response.setContentType("text/json; charset=utf-8");
 	        PrintWriter out = response.getWriter();
 	        Map<String, Object> jsonMap = new HashMap<String, Object>();
@@ -67,9 +67,9 @@ public class AddClassification extends HttpServlet {
 		if (Global.verifyToken(token)) {
 			int id = Integer.parseInt(parameterMap.get("id"));
 			String name = parameterMap.get("name");
-			IProblemService problemService = new ProblemServiceImpl();
+			IClassificationService classificationService = new ClassificationServiceImpl();
 			try {
-				boolean result = problemService.addClassification(id, name);
+				boolean result = classificationService.addClassification(id, name);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
 		        Map<String, Object> jsonMap = new HashMap<String, Object>();

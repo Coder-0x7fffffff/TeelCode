@@ -8,13 +8,13 @@ import org.oj.entity.Comments;
 
 public class CommentsModel {
 
-	int comments_id;
-	String username;
-	String reply_username;
-	String img;
-	String detail;
-	java.sql.Date time;
-	List<CommentsModel> replies;
+	private int comments_id;
+	private String username;
+	private String reply_username;
+	private String img;
+	private String detail;
+	private java.sql.Date time;
+	private List<CommentsModel> replies;
 	
 	public CommentsModel(Comments comments) {
 		comments_id = comments.getCid();
