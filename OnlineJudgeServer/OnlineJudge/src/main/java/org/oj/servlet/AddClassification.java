@@ -59,14 +59,14 @@ public class AddClassification extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = paramterMap.get("token");
+			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int id = Integer.parseInt(paramterMap.get("id"));
-			String name = paramterMap.get("name");
+			int id = Integer.parseInt(parameterMap.get("id"));
+			String name = parameterMap.get("name");
 			IProblemService problemService = new ProblemServiceImpl();
 			try {
 				boolean result = problemService.addClassification(id, name);

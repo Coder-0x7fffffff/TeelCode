@@ -1,11 +1,24 @@
 package org.oj.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.oj.common.Global;
+import org.oj.service.ICommentsService;
+import org.oj.service.impl.CommentsServiceImpl;
+import org.oj.util.WebUtil;
+
+import com.alibaba.fastjson.JSON;
 
 /**
  * Servlet implementation class AddComment
@@ -38,8 +51,39 @@ public class AddComment extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = parameterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			int pid = Integer.parseInt(parameterMap.get("problem_id"));
+			String uid = parameterMap.get("username");
+			String time = parameterMap.get("time");
+			String detail = parameterMap.get("detail");
+			int cfaid = Integer.parseInt(parameterMap.get("parent_comment_id"));
+			String ruid = parameterMap.get("reply_username");
+			ICommentsService commentService = new CommentsServiceImpl();
+			try {
+				int cid = commentService.addComment(uid, pid, cfaid, ruid, detail, time);
+				response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        Map<String, Object> jsonMap = new HashMap<String, Object>();
+		        jsonMap.put("err", null);
+		        jsonMap.put("cid", cid);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
+		} else {
+			/* */
+		}
 	}
 
 }

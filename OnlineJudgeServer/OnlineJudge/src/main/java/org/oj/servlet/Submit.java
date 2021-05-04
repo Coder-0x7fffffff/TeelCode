@@ -1,6 +1,8 @@
 package org.oj.servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -10,7 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
+import org.oj.service.ISubmitService;
+import org.oj.service.impl.SubmitServiceImpl;
 import org.oj.util.ConcurrencyUtil;
+import org.oj.util.DateUtil;
 import org.oj.util.FileUtil;
 import org.oj.util.JNAUtil;
 import org.oj.util.WebUtil;
@@ -35,12 +40,11 @@ public class Submit extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    @SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String token = WebUtil.getToken(request);
 		if (Global.verifyToken(token)) {
 			/* problem id */
-			int id = 1;
+			int pid = 1;
 			String code = "#include <iostream>\n"
 					+ "#include <vector>\n"
 					+ "using namespace std;\n"
@@ -53,9 +57,10 @@ public class Submit extends HttpServlet {
 					+ "    return 0;\n"
 					+ "}";
 			int language = 1;
+			java.sql.Date time = DateUtil.toSQLDate(new java.util.Date());
 			String dirPath = "rid" + ConcurrencyUtil.nextId();
 			Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
-			String samplePath = "ojsample/" + id;
+			String samplePath = "ojsample/" + pid;
 			/* If java, add package header */
 			if (2 == language) {
 				code = "package ojrecord." + dirPath + ";\n" + code;
@@ -65,15 +70,33 @@ public class Submit extends HttpServlet {
 			JNAUtil.judge(code, dirPath, samplePath, language);
 			String resJson = FileUtil.readFromFile(dirPath + "/Main.res");
 			JSONObject jsonObject = JSON.parseObject(resJson);
-			/* update userproblem and record */
+			int pstate = 1;
+			int totalTimeUsage = 0;
+			int maxMemUsage = 0;
+			String resultInfo = "";
 			int count = (int) jsonObject.getInteger("count");
 			for (int i = 1; i <= count; ++i) {
 				JSONObject cur = jsonObject.getJSONObject(String.valueOf(i));
 				int resultCode = cur.getInteger("ResultCode");
-				int timeUsage = cur.getInteger("TimeUsed");
-				int memUsage = cur.getInteger("MemoryUsed");
-				String resultInfo = cur.getString("ResultInfo");
+				/* not AC */
+				if (3 != resultCode) {
+					pstate = 0;
+					totalTimeUsage = maxMemUsage = -1;
+					resultInfo = cur.getString("ResultInfo");
+				} else {
+					int timeUsage = cur.getInteger("TimeUsed");
+					int memUsage = cur.getInteger("MemoryUsed");	
+					totalTimeUsage += timeUsage;
+					maxMemUsage = Math.max(maxMemUsage, memUsage);
+				}
 			}
+			ISubmitService submitService = new SubmitServiceImpl();
+			try {
+				submitService.submit(pid, Global.getToken(token).uid, pstate, time, totalTimeUsage, maxMemUsage, code, language, resultInfo);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			response.setContentType("text/json; charset=utf-8");
 			response.getWriter().write(resJson);
 		}
 		else {
@@ -84,41 +107,62 @@ public class Submit extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-    @SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = paramterMap.get("token");
+			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int id = Integer.parseInt(paramterMap.get("id"));
-			String code = paramterMap.get("code");
-			int language = Integer.parseInt(paramterMap.get("language"));
-			String dirPath = "rid" + ConcurrencyUtil.nextId();
-			Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
-			String samplePath = "/usr/local/oj/ojsample/" + id;
-			/* If java, add package header */
-			if (2 == language) {
-				code = "package usr.local.oj.ojrecord." + dirPath + ";\n" + code;
+			try {
+				int pid = Integer.parseInt(parameterMap.get("id"));
+				String code = parameterMap.get("code");
+				int language = Integer.parseInt(parameterMap.get("language"));
+				java.sql.Date time = DateUtil.string2SQLDate(parameterMap.get("time"));
+				String dirPath = "rid" + ConcurrencyUtil.nextId();
+				Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
+				String samplePath = "/usr/local/oj/ojsample/" + pid;
+				/* If java, add package header */
+				if (2 == language) {
+					code = "package usr.local.oj.ojrecord." + dirPath + ";\n" + code;
+				}
+				dirPath = "/usr/local/oj/ojrecord/" + dirPath;
+				FileUtil.mkdirs(dirPath);
+				JNAUtil.judge(code, dirPath, samplePath, language);
+				String resJson = FileUtil.readFromFile(dirPath + "/Main.res");
+				JSONObject jsonObject = JSON.parseObject(resJson);
+				
+				int pstate = 1;
+				int totalTimeUsage = 0;
+				int maxMemUsage = 0;
+				String resultInfo = "";
+				int count = (int) jsonObject.getInteger("count");
+				for (int i = 1; i <= count; ++i) {
+					JSONObject cur = jsonObject.getJSONObject(String.valueOf(i));
+					int resultCode = cur.getInteger("ResultCode");
+					/* not AC */
+					if (3 != resultCode) {
+						pstate = 0;
+						totalTimeUsage = maxMemUsage = -1;
+						resultInfo = cur.getString("ResultInfo");
+					} else {
+						int timeUsage = cur.getInteger("TimeUsed");
+						int memUsage = cur.getInteger("MemoryUsed");	
+						totalTimeUsage += timeUsage;
+						maxMemUsage = Math.max(maxMemUsage, memUsage);
+					}
+				}
+				ISubmitService submitService = new SubmitServiceImpl();
+				submitService.submit(pid, Global.getToken(token).uid, pstate, time, totalTimeUsage, maxMemUsage, code, language, resultInfo);
+				response.setContentType("text/json; charset=utf-8");
+				response.getWriter().write(resJson);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-			dirPath = "/usr/local/oj/ojrecord/" + dirPath;
-			FileUtil.mkdirs(dirPath);
-			JNAUtil.judge(code, dirPath, samplePath, language);
-			String resJson = FileUtil.readFromFile(dirPath + "/Main.res");
-			JSONObject jsonObject = JSON.parseObject(resJson);
-			/* update userproblem and record */
-			int count = (int) jsonObject.getInteger("count");
-			for (int i = 1; i <= count; ++i) {
-				JSONObject cur = jsonObject.getJSONObject(String.valueOf(i));
-				int resultCode = cur.getInteger("ResultCode");
-				int timeUsage = cur.getInteger("TimeUsed");
-				int memUsage = cur.getInteger("MemoryUsed");
-				String resultInfo = cur.getString("ResultInfo");
-			}
-			response.getWriter().write(resJson);
 		} else {
 			/* */
 		}

@@ -65,14 +65,14 @@ public class GetProblem extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = paramterMap.get("token");
+			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
 			String uid = Global.getToken(token).uid;
-			int pid = Integer.parseInt(paramterMap.get("id"));
+			int pid = Integer.parseInt(parameterMap.get("id"));
 			IProblemService problemService = new ProblemServiceImpl();
 			try {
 				ProblemWithClassification problemWithClassification = problemService.getProblemWithClassification(uid, pid);

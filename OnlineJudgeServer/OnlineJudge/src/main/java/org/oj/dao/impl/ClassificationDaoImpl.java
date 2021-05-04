@@ -67,13 +67,6 @@ public class ClassificationDaoImpl implements IClassificationDao {
 	}
 	
 	@Override
-	public boolean deleteClassification(String name) throws SQLException {
-		String sql = "DELETE FROM Classification WHERE c_name=?";
-		Object[] params = { name };
-		return 1 == DBUtil.update(sql, params);
-	}
-
-	@Override
 	public boolean updateClassification(int id, String name) throws SQLException {
 		String sql = "UPDATE Classification SET c_name=? WHERE c_id=?";
 		Object[] params = { name, id };

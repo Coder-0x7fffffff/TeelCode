@@ -69,19 +69,19 @@ public class UpdateUser extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = paramterMap.get("token");
+			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			String name = paramterMap.get("name");
+			String name = parameterMap.get("name");
 			int sex = -1;
-			String psex = paramterMap.get("sex");
+			String psex = parameterMap.get("sex");
 			if (null != psex) {
 				sex = Integer.parseInt(psex);
 			}
-			String dscp = paramterMap.get("dscp");
+			String dscp = parameterMap.get("dscp");
 			IUpdateUserService updateUserService = new UpdateUserServiceImpl();
 			try {
 				boolean result = updateUserService.updateUser(Global.getToken(token).uid, name, sex, dscp);

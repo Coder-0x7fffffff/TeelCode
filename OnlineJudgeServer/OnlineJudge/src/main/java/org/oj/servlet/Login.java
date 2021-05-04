@@ -67,9 +67,9 @@ public class Login extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
-		String id = paramterMap.get("id");
-		String pwd = paramterMap.get("pwd");
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
+		String id = parameterMap.get("id");
+		String pwd = parameterMap.get("pwd");
 		ILoginService loginService = new LoginServiceImpl();
 		try {
 			boolean result = loginService.login(id, pwd);

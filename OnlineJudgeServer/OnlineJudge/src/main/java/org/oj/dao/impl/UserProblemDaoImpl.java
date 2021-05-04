@@ -28,12 +28,27 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 	
 	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public int findStateByUidAndPid(String uid, int pid) throws SQLException {
 		String sql = "SELECT * FROM UserProblem WHERE u_id=? AND p_id=?";
 		Object[] params = { uid, pid };
 		List<UserProblem> userProblemList = (List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 		return userProblemList.isEmpty() ? -1 : ((List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER)).get(0).getPstate();
+	}
+	
+	@Override
+	public boolean insertUserProblem(String uid, int pid, int pstate) throws SQLException {
+		String sql = "INSERT INTO UserProblem VALUES(?,?,?)";
+		Object[] params = { uid, pid, pstate };
+		return 1 == DBUtil.update(sql, params);
+	}
+	
+	@Override
+	public boolean updateUserProblem(String uid, int pid, int pstate) throws SQLException {
+		String sql = "UPDATE UserProblem SET p_state=? WHERE u_id=? AND p_id=?";
+		Object[] params = { pstate, uid, pid };
+		return 1 == DBUtil.update(sql, params);
 	}
 	
 }

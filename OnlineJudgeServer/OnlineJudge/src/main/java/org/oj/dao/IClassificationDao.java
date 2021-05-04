@@ -17,8 +17,6 @@ public interface IClassificationDao {
 	
 	public boolean deleteClassification(int id) throws SQLException;
 	
-	public boolean deleteClassification(String name) throws SQLException;
-	
 	public boolean updateClassification(int id, String name) throws SQLException;
 	
 }

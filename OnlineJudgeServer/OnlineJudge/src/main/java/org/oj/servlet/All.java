@@ -80,18 +80,18 @@ public class All extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = paramterMap.get("token");
+			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
 			String uid = Global.getToken(token).uid;
-			int page = Integer.parseInt(paramterMap.get("page"));
-			int pageSize = Integer.parseInt(paramterMap.get("offset"));
-			int difficulty = Integer.parseInt(paramterMap.get("difficulty"));
-			int classification = Integer.parseInt(paramterMap.get("class"));
-			int status = Integer.parseInt(paramterMap.get("status"));
+			int page = Integer.parseInt(parameterMap.get("page"));
+			int pageSize = Integer.parseInt(parameterMap.get("offset"));
+			int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
+			int classification = Integer.parseInt(parameterMap.get("class"));
+			int status = Integer.parseInt(parameterMap.get("status"));
 			IProblemService problemService = new ProblemServiceImpl();
 			try {
 				List<ProblemWithClassification> problemWithClassificationList = problemService.all(

@@ -1,7 +1,10 @@
 package org.oj.model;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.oj.entity.Comments;
 
 public class CommentsModel {
 
@@ -12,6 +15,29 @@ public class CommentsModel {
 	String detail;
 	java.sql.Date time;
 	List<CommentsModel> replies;
+	
+	public CommentsModel(Comments comments) {
+		comments_id = comments.getCid();
+		username = comments.getUid();
+		reply_username = comments.getCfauid();
+		img = null;
+		detail = comments.getCdetails();
+		time = comments.getCtime();
+		replies = null;
+	}
+	
+	public CommentsModel(Comments comments, List<Comments> childCommentsList) {
+		comments_id = comments.getCid();
+		username = comments.getUid();
+		reply_username = comments.getCfauid();
+		img = null;
+		detail = comments.getCdetails();
+		time = comments.getCtime();
+		replies = new ArrayList<CommentsModel>();
+		for (Comments childComments : childCommentsList) {
+			replies.add(new CommentsModel(childComments));
+		}
+	}
 	
 	public CommentsModel(int comments_id, String username, String reply_username, String img, String detail, Date time,
 			List<CommentsModel> replies) {

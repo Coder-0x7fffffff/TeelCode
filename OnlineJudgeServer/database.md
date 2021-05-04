@@ -86,6 +86,7 @@
 | u_id   | VARCHAR  | 用户id   |
 | p_id   | INTEGER | 题目id   |
 | c_fa   | INTEGER  | 父评论id   |
+| c_fa_uid   | VARCHAR  | 回复的用户id |
 | c_details   | TEXT  | 评论内容   |
 | c_time   | DATETIME  | 评论时间   |
 

@@ -27,9 +27,8 @@ CREATE TABLE Problem(
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE Classification(
-	c_id INTEGER,
-	c_name VARCHAR(32),
-    PRIMARY KEY(c_id, c_name)
+	c_id INTEGER PRIMARY KEY,
+	c_name VARCHAR(32)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE ProblemClassification(
@@ -44,7 +43,7 @@ CREATE TABLE UserProblem(
 	p_id INTEGER,
 	p_state INTEGER,
 	FOREIGN KEY(u_id) REFERENCES Login(u_id)
-) DEFAULT CHARSET=utf8;;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE Record(
 	p_id INTEGER,
@@ -61,10 +60,11 @@ CREATE TABLE Record(
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE Comments(
-	c_id INTEGER PRIMARY KEY,
+	c_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     u_id VARCHAR(16) NOT NULL,
     p_id INTEGER,
     c_fa INTEGER,
+    c_fa_uid VARCHAR(16),
     c_details TEXT,
     c_time DATETIME,
 	FOREIGN KEY(p_id) REFERENCES Problem(p_id),

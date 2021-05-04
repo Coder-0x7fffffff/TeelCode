@@ -120,5 +120,40 @@ public class ProblemDaoImpl implements IProblemDao {
 			String outputs) throws SQLException {
 		return false;
 	}
-
+	
+	@Override
+	public int getProblemCount() throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Problem";
+		Object[] params = null;
+		return (int) DBUtil.query(sql, params, new ResultHandler() {
+			@Override
+			public Object handle(ResultSet resultSet) throws SQLException {
+				while (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+				return -1;
+			}
+		});
+	}
+	
+	@Override
+	public int getNextProblemId() throws SQLException {
+		String sql = "SELECT p1.p_id + 1 AS okid\n"
+				+ "FROM Problem p1\n"
+				+ "LEFT JOIN Problem p2 ON p2.p_id = p1.p_id + 1\n"
+				+ "WHERE p2.p_id IS NULL\n"
+				+ "ORDER BY p1.p_id\n"
+				+ "LIMIT 0, 1";
+		Object[] params = null;
+		return (int) DBUtil.query(sql, params, new ResultHandler() {
+			@Override
+			public Object handle(ResultSet resultSet) throws SQLException {
+				while (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+				return 0;
+			}
+		});
+	}
+	
 }

@@ -5,15 +5,15 @@ import java.sql.Blob;
 public class OJUser {
 	
 	private String uid;
-	private String upwd;
+	private String uname;
 	private int usex;
 	private String udscp;
 	private Blob uimg;
 	
-	public OJUser(String uid, String upwd, int usex, String udscp, Blob uimg) {
+	public OJUser(String uid, String uname, int usex, String udscp, Blob uimg) {
 		super();
 		this.uid = uid;
-		this.upwd = upwd;
+		this.uname = uname;
 		this.usex = usex;
 		this.udscp = udscp;
 		this.uimg = uimg;
@@ -21,7 +21,7 @@ public class OJUser {
 	
 	@Override
 	public String toString() {
-		return "OJUser [uid=" + uid + ", upwd=" + upwd + ", usex=" + usex + ", udscp=" + udscp + ", uimg=" + uimg + "]";
+		return "OJUser [uid=" + uid + ", uname=" + uname + ", usex=" + usex + ", udscp=" + udscp + ", uimg=" + uimg + "]";
 	}
 	
 	public String getUid() {
@@ -32,12 +32,12 @@ public class OJUser {
 		this.uid = uid;
 	}
 	
-	public String getUpwd() {
-		return upwd;
+	public String getUname() {
+		return uname;
 	}
 	
-	public void setUpwd(String upwd) {
-		this.upwd = upwd;
+	public void setUname(String uname) {
+		this.uname = uname;
 	}
 	
 	public int getUsex() {

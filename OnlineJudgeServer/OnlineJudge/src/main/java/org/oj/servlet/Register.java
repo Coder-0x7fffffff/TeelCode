@@ -63,11 +63,11 @@ public class Register extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
-		String id = paramterMap.get("id");
-		String pwd = paramterMap.get("pwd");
-		String problem = paramterMap.get("problem");
-		String answer = paramterMap.get("answer");
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
+		String id = parameterMap.get("id");
+		String pwd = parameterMap.get("pwd");
+		String problem = parameterMap.get("problem");
+		String answer = parameterMap.get("answer");
 		IRegisterService registerService = new RegisterServiceImpl();
 		try {
 			boolean result = registerService.register(id, pwd, problem, answer);

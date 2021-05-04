@@ -35,10 +35,15 @@ public class Global {
 		}
 	}
 	
+	/* <sign, token> */
 	private static ConcurrentMap<String, Token> tokenMap = new ConcurrentHashMap<String, Token>();
+	
+	/* <uid, sign> */
+	private static ConcurrentMap<String, String> userSignMap = new ConcurrentHashMap<String, String>();
 	
 	/* Set timer to refresh tokens */
 	static {
+		/* init logger */
 		logger = Logger.getGlobal();
 		try {
 			FileHandler fileHandler = new FileHandler("oj.log", true);
@@ -49,13 +54,17 @@ public class Global {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		/* init timer */
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
 				long timeStamp = System.currentTimeMillis();
-				for (String sign : tokenMap.keySet()) {
+				for (String uid : userSignMap.keySet()) {
+					String sign = userSignMap.get(uid);
 					Token token = tokenMap.get(sign);
 					if (timeStamp >= token.expireTimeStamp) {
+						userSignMap.remove(uid);
 						tokenMap.remove(sign);
 					}
 				}
@@ -71,16 +80,25 @@ public class Global {
 	 *  Get token by uid, if no token for uid, then create one and return 
 	 */
 	public static synchronized Token getOrCreateToken(String uid) throws NoSuchAlgorithmException {
-		for (String key : tokenMap.keySet()) {
-			if (uid.equals(tokenMap.get(key).uid)) {
-				return tokenMap.get(key);
-			}
+		if (null == uid) {
+			return null;
+		}
+		if (userSignMap.containsKey(uid)) {
+			return tokenMap.get(userSignMap.get(uid));
 		}
 		long timeStamp = System.currentTimeMillis();
 		String sign = generateToken(uid + String.valueOf(timeStamp));
 		Token token = new Token(uid, sign, timeStamp);
+		userSignMap.put(uid, sign);
 		tokenMap.put(sign, token);
 		return token;
+	}
+	
+	public static synchronized String getSign(String uid) {
+		if (userSignMap.containsKey(uid)) {
+			return userSignMap.get(uid);
+		}
+		return null;
 	}
 	
 	public static synchronized Token getToken(String sign) {

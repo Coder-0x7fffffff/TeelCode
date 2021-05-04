@@ -41,6 +41,34 @@ public class DBUtil {
 		return dataSource.getConnection();
 	}
 	
+	public static Object updateAndQuery(String updateSQL, Object[] updateParams,
+			String querySQL, Object[] queryParams, ResultHandler resultHandler) throws SQLException {
+		try (final Connection connection = getConnection()) {
+			int rowCount = 0;
+			try (final PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
+				if (null != updateParams) {
+					for (int i = 0; i < updateParams.length; ++i) {
+						preparedStatement.setObject(i + 1, updateParams[i]);
+					}
+				}
+				rowCount = preparedStatement.executeUpdate();
+			}
+			if (rowCount > 0) {
+				try (final PreparedStatement preparedStatement = connection.prepareStatement(querySQL);
+						ResultSet resultSet = preparedStatement.executeQuery()) {
+					if (null != queryParams) {
+						for (int i = 0; i < queryParams.length; ++i) {
+							preparedStatement.setObject(i + 1, queryParams[i]);
+						}
+					}
+					return resultHandler.handle(resultSet);
+				}
+			} else {
+				return null;
+			}
+		}
+	}
+	
 	/**
 	 * Execute an query sql, and you need to give a result handler to handle the result set
 	 * 

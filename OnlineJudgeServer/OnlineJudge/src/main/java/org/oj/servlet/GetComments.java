@@ -1,11 +1,25 @@
 package org.oj.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.oj.common.Global;
+import org.oj.model.CommentsModel;
+import org.oj.service.ICommentsService;
+import org.oj.service.impl.CommentsServiceImpl;
+import org.oj.util.WebUtil;
+
+import com.alibaba.fastjson.JSON;
 
 /**
  * Servlet implementation class GetComments
@@ -36,6 +50,32 @@ public class GetComments extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = parameterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			int pid = Integer.parseInt(parameterMap.get("problem_id"));
+			int page = Integer.parseInt(parameterMap.get("page"));
+			int pageSize = Integer.parseInt(parameterMap.get("offset"));
+			ICommentsService commentService = new CommentsServiceImpl();
+			try {
+				List<CommentsModel> commentsModelList = commentService.getComments(pid, page, pageSize);
+				response.setContentType("text/json; charset=utf-8");
+				PrintWriter out = response.getWriter();
+				Map<String, Object> jsonMap = new HashMap<String, Object>();
+				jsonMap.put("err", null);
+		        jsonMap.put("comments", commentsModelList);
+		        String json = JSON.toJSONString(jsonMap);
+		        out.print(json);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/* */
+		}
 	}
 
 }

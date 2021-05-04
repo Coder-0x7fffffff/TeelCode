@@ -22,7 +22,7 @@ public class AlterPasswordServiceImpl implements IAlterPasswordService {
 	public boolean alter(String id, String pwd) throws SQLException, NoSuchAlgorithmException {
 		Login login = loginDao.findLoginById(id);
 		return null != login && 
-				(1 == loginDao.updateLoginPwd(id, EncryptionUtil.md5(pwd)));
+				(1 == loginDao.updateLoginPwd(id, EncryptionUtil.md5(pwd).substring(7, 23)));
 	}
 	
 }

@@ -7,23 +7,25 @@ public class Comments {
 	private String uid;
 	private int pid;
 	private int cfa;
+	private String cfauid;
 	private String cdetails;
 	private java.sql.Date ctime;
 	
-	public Comments(int cid, String uid, int pid, int cfa, String cdetails, Date ctime) {
+	public Comments(int cid, String uid, int pid, int cfa, String cfauid, String cdetails, Date ctime) {
 		super();
 		this.cid = cid;
 		this.uid = uid;
 		this.pid = pid;
 		this.cfa = cfa;
+		this.cfauid = cfauid;
 		this.cdetails = cdetails;
 		this.ctime = ctime;
 	}
 
 	@Override
 	public String toString() {
-		return "Comments [cid=" + cid + ", uid=" + uid + ", pid=" + pid + ", cfa=" + cfa + ", cdetails=" + cdetails
-				+ ", ctime=" + ctime + "]";
+		return "Comments [cid=" + cid + ", uid=" + uid + ", pid=" + pid + ", cfa=" + cfa + ", cfauid=" + cfauid
+				+ ", cdetails=" + cdetails + ", ctime=" + ctime + "]";
 	}
 
 	public int getCid() {
@@ -58,6 +60,14 @@ public class Comments {
 		this.cfa = cfa;
 	}
 
+	public String getCfauid() {
+		return cfauid;
+	}
+
+	public void setCfauid(String cfauid) {
+		this.cfauid = cfauid;
+	}
+
 	public String getCdetails() {
 		return cdetails;
 	}
@@ -73,5 +83,5 @@ public class Comments {
 	public void setCtime(java.sql.Date ctime) {
 		this.ctime = ctime;
 	}
-
+	
 }

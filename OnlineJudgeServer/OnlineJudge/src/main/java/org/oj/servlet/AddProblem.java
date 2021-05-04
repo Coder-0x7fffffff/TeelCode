@@ -76,19 +76,19 @@ public class AddProblem extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> paramterMap = WebUtil.parseRequest(request);
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = paramterMap.get("token");
+			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int id = Integer.parseInt(paramterMap.get("id"));
-			String name = paramterMap.get("name");
-			int difficulty = Integer.parseInt(paramterMap.get("difficulty"));
-			String dscp = paramterMap.get("dscp");
-			String inputs = paramterMap.get("inputs");
-			String outputs = paramterMap.get("outputs");
-			String classificationString = paramterMap.get("classification");
+			int id = Integer.parseInt(parameterMap.get("id"));
+			String name = parameterMap.get("name");
+			int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
+			String dscp = parameterMap.get("dscp");
+			String inputs = parameterMap.get("inputs");
+			String outputs = parameterMap.get("outputs");
+			String classificationString = parameterMap.get("classification");
 			String[] classificationNames = classificationString.split(",");
 			IProblemService problemService = new ProblemServiceImpl();
 			try {

@@ -77,4 +77,12 @@ public class ProblemServiceImpl implements IProblemService {
 		return classificationDao.findClassifications();
 	}
 
+	public int getProblemCount() throws SQLException {
+		return problemDao.getProblemCount();
+	}
+	
+	public int getNextProblemId() throws SQLException {
+		return problemDao.getNextProblemId();
+	}
+	
 }

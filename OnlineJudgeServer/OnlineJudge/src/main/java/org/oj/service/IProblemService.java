@@ -22,4 +22,8 @@ public interface IProblemService {
 	
 	public List<Classification> getClassifications() throws SQLException;
 	
+	public int getProblemCount() throws SQLException;
+	
+	public int getNextProblemId() throws SQLException;
+	
 }
