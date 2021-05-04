@@ -10,7 +10,7 @@ public interface IRecordDao {
 	
 	public List<Record> findRecord(int pid, String uid) throws SQLException;
 
-	public boolean insertRecord(int pid, String uid, int pstate, java.sql.Date time,
+	public boolean insertRecord(int pid, String uid, int pstate, java.sql.Timestamp time,
 			int timeUsage, int memUsage, String code, int codeType, String resultInfo) throws SQLException;
 	
 }

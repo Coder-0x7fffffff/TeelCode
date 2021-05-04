@@ -13,12 +13,12 @@ public class DateUtil {
 		return SIMPLE_DATE_FORMAT.parse(time);
 	}
 	
-	public static java.sql.Date string2SQLDate(String time) throws ParseException {
+	public static java.sql.Timestamp string2SQLDate(String time) throws ParseException {
 		return toSQLDate(SIMPLE_DATE_FORMAT.parse(time));
 	}
 	
-	public static java.sql.Date toSQLDate(java.util.Date utilDate) {
-		return new java.sql.Date(utilDate.getTime());
+	public static java.sql.Timestamp toSQLDate(java.util.Date utilDate) {
+		return new java.sql.Timestamp(utilDate.getTime());
 	}
 	
 	public static java.util.Date fromSQLDate(java.sql.Date sqlDate) {

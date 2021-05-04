@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 public interface ISubmitService {
 
-	public boolean submit(int pid, String uid, int pstate, java.sql.Date time,
+	public boolean submit(int pid, String uid, int pstate, java.sql.Timestamp time,
 			int timeUsage, int memUsage, String code, int codeType, String resultInfo) throws SQLException;
 	
 }

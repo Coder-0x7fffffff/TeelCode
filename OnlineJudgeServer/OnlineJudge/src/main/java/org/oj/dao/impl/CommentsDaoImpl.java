@@ -25,7 +25,7 @@ public class CommentsDaoImpl implements ICommentsDao {
 				int cfa = resultSet.getInt(4);
 				String cfauid = resultSet.getString(5);
 				String cdetails = resultSet.getString(6);
-				java.sql.Date ctime = resultSet.getDate(7);
+				java.sql.Timestamp ctime = resultSet.getTimestamp(7);
 				commentsList.add(new Comments(cid, uid, pid, cfa, cfauid, cdetails, ctime));
 			}
 			return commentsList;

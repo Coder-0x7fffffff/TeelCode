@@ -1,7 +1,5 @@
 package org.oj.entity;
 
-import java.sql.Date;
-
 public class Comments {
 	private int cid;
 	private String uid;
@@ -9,9 +7,9 @@ public class Comments {
 	private int cfa;
 	private String cfauid;
 	private String cdetails;
-	private java.sql.Date ctime;
+	private java.sql.Timestamp ctime;
 	
-	public Comments(int cid, String uid, int pid, int cfa, String cfauid, String cdetails, Date ctime) {
+	public Comments(int cid, String uid, int pid, int cfa, String cfauid, String cdetails, java.sql.Timestamp ctime) {
 		super();
 		this.cid = cid;
 		this.uid = uid;
@@ -76,11 +74,11 @@ public class Comments {
 		this.cdetails = cdetails;
 	}
 
-	public java.sql.Date getCtime() {
+	public java.sql.Timestamp getCtime() {
 		return ctime;
 	}
 
-	public void setCtime(java.sql.Date ctime) {
+	public void setCtime(java.sql.Timestamp ctime) {
 		this.ctime = ctime;
 	}
 	

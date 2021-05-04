@@ -1,6 +1,5 @@
 package org.oj.model;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class CommentsModel {
 	private String reply_username;
 	private String img;
 	private String detail;
-	private java.sql.Date time;
+	private java.sql.Timestamp time;
 	private List<CommentsModel> replies;
 	
 	public CommentsModel(Comments comments) {
@@ -39,7 +38,7 @@ public class CommentsModel {
 		}
 	}
 	
-	public CommentsModel(int comments_id, String username, String reply_username, String img, String detail, Date time,
+	public CommentsModel(int comments_id, String username, String reply_username, String img, String detail, java.sql.Timestamp time,
 			List<CommentsModel> replies) {
 		super();
 		this.comments_id = comments_id;
@@ -98,11 +97,11 @@ public class CommentsModel {
 		this.detail = detail;
 	}
 
-	public java.sql.Date getTime() {
+	public java.sql.Timestamp getTime() {
 		return time;
 	}
 
-	public void setTime(java.sql.Date time) {
+	public void setTime(java.sql.Timestamp time) {
 		this.time = time;
 	}
 

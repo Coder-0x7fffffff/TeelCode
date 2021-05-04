@@ -13,7 +13,7 @@ public class SubmitServiceImpl implements ISubmitService {
 	IRecordDao recordDao = new RecordDaoImpl();
 	IUserProblemDao userProblemDao = new UserProblemDaoImpl();
 	
-	public boolean submit(int pid, String uid, int pstate, java.sql.Date time,
+	public boolean submit(int pid, String uid, int pstate, java.sql.Timestamp time,
 			int timeUsage, int memUsage, String code, int codeType, String resultInfo) throws SQLException {
 		int curState = userProblemDao.findStateByUidAndPid(uid, pid);
 		/* first commit */

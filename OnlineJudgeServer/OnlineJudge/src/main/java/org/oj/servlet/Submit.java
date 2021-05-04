@@ -57,7 +57,7 @@ public class Submit extends HttpServlet {
 					+ "    return 0;\n"
 					+ "}";
 			int language = 1;
-			java.sql.Date time = DateUtil.toSQLDate(new java.util.Date());
+			java.sql.Timestamp time = DateUtil.toSQLDate(new java.util.Date());
 			String dirPath = "rid" + ConcurrencyUtil.nextId();
 			Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
 			String samplePath = "ojsample/" + pid;
@@ -120,9 +120,9 @@ public class Submit extends HttpServlet {
 				int pid = Integer.parseInt(parameterMap.get("id"));
 				String code = parameterMap.get("code");
 				int language = Integer.parseInt(parameterMap.get("language"));
-				java.sql.Date time = DateUtil.string2SQLDate(parameterMap.get("time"));
+				java.sql.Timestamp time = DateUtil.string2SQLDate(parameterMap.get("time"));
 				String dirPath = "rid" + ConcurrencyUtil.nextId();
-				Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
+				Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath + ", code=" + code);
 				String samplePath = "/usr/local/oj/ojsample/" + pid;
 				/* If java, add package header */
 				if (2 == language) {

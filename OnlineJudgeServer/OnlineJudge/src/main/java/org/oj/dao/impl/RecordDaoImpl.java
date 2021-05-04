@@ -38,7 +38,7 @@ public class RecordDaoImpl implements IRecordDao {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Record> findRecord(int pid) throws SQLException {
-		String sql = "SELECT * FROM WHERE p_id=?";
+		String sql = "SELECT * FROM Record WHERE p_id=?";
 		Object[] params = { pid };
 		return (List<Record>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
@@ -46,13 +46,13 @@ public class RecordDaoImpl implements IRecordDao {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Record> findRecord(int pid, String uid) throws SQLException {
-		String sql = "SELECT * FROM WHERE p_id=? AND u_id=?";
+		String sql = "SELECT * FROM Record WHERE p_id=? AND u_id=?";
 		Object[] params = { pid, uid };
 		return (List<Record>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
 	
 	@Override
-	public boolean insertRecord(int pid, String uid, int pstate, java.sql.Date time,
+	public boolean insertRecord(int pid, String uid, int pstate, java.sql.Timestamp time,
 			int timeUsage, int memUsage, String code, int codeType, String resultInfo) throws SQLException {
 		String sql = "INSERT INTO Record VALUES(?,?,?,?,?,?,?,?,?)";
 		Object[] params = { pid, uid, pstate, time, timeUsage, memUsage, code, codeType, resultInfo };
