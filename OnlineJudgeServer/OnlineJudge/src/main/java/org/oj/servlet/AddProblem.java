@@ -21,9 +21,11 @@ import org.oj.service.IClassificationService;
 import org.oj.service.IProblemService;
 import org.oj.service.impl.ClassificationServiceImpl;
 import org.oj.service.impl.ProblemServiceImpl;
+import org.oj.util.FileUtil;
 import org.oj.util.WebUtil;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * Servlet implementation class AddProblem
@@ -86,7 +88,7 @@ public class AddProblem extends HttpServlet {
 		}
 		if (Global.verifyToken(token)) {
 			try {
-				int id = Integer.parseInt(parameterMap.get("id"));
+				int pid = Integer.parseInt(parameterMap.get("id"));
 				String name = parameterMap.get("name");
 				int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
 				String dscp = parameterMap.get("dscp");
@@ -102,12 +104,20 @@ public class AddProblem extends HttpServlet {
 					}
 				}
 				IProblemService problemService = new ProblemServiceImpl();
-				boolean result = problemService.addProblem(id, name, difficulty, 0, 0, dscp, inputs, outputs, classificationList);
+				boolean result = problemService.addProblem(pid, name, difficulty, 0, 0, dscp, inputs, outputs, classificationList);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
 		        Map<String, Object> jsonMap = new HashMap<String, Object>();
 		        if (result) {
-		        	new File("/usr/local/oj/ojsample/" + id).mkdirs();
+		        	String samplePath = "/usr/local/oj/ojsample/" + pid;
+		        	new File(samplePath).mkdirs();
+		        	JSONArray inputArray = JSON.parseArray(inputs);
+		        	JSONArray outputArray = JSON.parseArray(outputs);
+		        	int length = Math.min(inputArray.size(), outputArray.size());
+		        	for (int i = 1; i <= length; ++i) {
+		        		FileUtil.writeToFile(samplePath + "/" + i + ".in", inputArray.getString(i - 1));
+		        		FileUtil.writeToFile(samplePath + "/" + i + ".out", outputArray.getString(i - 1));
+		        	}
 		        }
 		        jsonMap.put("result", result);
 		        String json = JSON.toJSONString(jsonMap);

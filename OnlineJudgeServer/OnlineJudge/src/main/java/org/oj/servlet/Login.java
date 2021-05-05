@@ -38,10 +38,10 @@ public class Login extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String id = WebUtil.decode(request.getParameter("id"));
-		String pwd = WebUtil.decode(request.getParameter("pwd"));
-		ILoginService loginService = new LoginServiceImpl();
 		try {
+			String id = WebUtil.decode(request.getParameter("id"));
+			String pwd = WebUtil.decode(request.getParameter("pwd"));
+			ILoginService loginService = new LoginServiceImpl();
 			boolean result = loginService.login(id, pwd);
 			response.setContentType("text/json; charset=utf-8");
 	        PrintWriter out = response.getWriter();
@@ -66,12 +66,12 @@ public class Login extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
-		request.setCharacterEncoding("UTF-8");
-		Map<String, String> parameterMap = WebUtil.parseRequest(request);
-		String id = parameterMap.get("id");
-		String pwd = parameterMap.get("pwd");
-		ILoginService loginService = new LoginServiceImpl();
 		try {
+			request.setCharacterEncoding("UTF-8");
+			Map<String, String> parameterMap = WebUtil.parseRequest(request);
+			String id = parameterMap.get("id");
+			String pwd = parameterMap.get("pwd");
+			ILoginService loginService = new LoginServiceImpl();
 			boolean result = loginService.login(id, pwd);
 			response.setContentType("text/json; charset=utf-8");
 	        PrintWriter out = response.getWriter();

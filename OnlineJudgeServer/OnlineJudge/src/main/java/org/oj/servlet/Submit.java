@@ -119,11 +119,16 @@ public class Submit extends HttpServlet {
 			try {
 				int pid = Integer.parseInt(parameterMap.get("id"));
 				String code = parameterMap.get("code");
+				String dirPath = "rid" + ConcurrencyUtil.nextId();
+				
+				String samplePath = "/usr/local/oj/ojsample/" + pid;
+				Global.logger.info("uid=" + Global.getToken(token).uid + 
+						" commit, Directory Path=" + dirPath + 
+						", Sample Path=" + samplePath + 
+						", code=" + code);
+				
 				int language = Integer.parseInt(parameterMap.get("language"));
 				java.sql.Timestamp time = DateUtil.string2SQLDate(parameterMap.get("time"));
-				String dirPath = "rid" + ConcurrencyUtil.nextId();
-				Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath + ", code=" + code);
-				String samplePath = "/usr/local/oj/ojsample/" + pid;
 				/* If java, add package header */
 				if (2 == language) {
 					code = "package usr.local.oj.ojrecord." + dirPath + ";\n" + code;
@@ -133,7 +138,6 @@ public class Submit extends HttpServlet {
 				JNAUtil.judge(code, dirPath, samplePath, language);
 				String resJson = FileUtil.readFromFile(dirPath + "/Main.res");
 				JSONObject jsonObject = JSON.parseObject(resJson);
-				
 				int pstate = 1;
 				int totalTimeUsage = 0;
 				int maxMemUsage = 0;
@@ -159,7 +163,7 @@ public class Submit extends HttpServlet {
 				response.setContentType("text/json; charset=utf-8");
 				response.getWriter().write(resJson);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				Global.logger.info("time error :" + parameterMap.get("time"));
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

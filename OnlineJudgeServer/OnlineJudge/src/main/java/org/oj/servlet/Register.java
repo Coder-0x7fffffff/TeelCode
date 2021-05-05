@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.service.INewUserService;
 import org.oj.service.IRegisterService;
+import org.oj.service.impl.NewUserServiceImpl;
 import org.oj.service.impl.RegisterServiceImpl;
 import org.oj.util.WebUtil;
 
@@ -62,15 +64,22 @@ public class Register extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
-		request.setCharacterEncoding("UTF-8");
-		Map<String, String> parameterMap = WebUtil.parseRequest(request);
-		String id = parameterMap.get("id");
-		String pwd = parameterMap.get("pwd");
-		String problem = parameterMap.get("problem");
-		String answer = parameterMap.get("answer");
-		IRegisterService registerService = new RegisterServiceImpl();
 		try {
+			request.setCharacterEncoding("UTF-8");
+			Map<String, String> parameterMap = WebUtil.parseRequest(request);
+			String id = parameterMap.get("id");
+			String pwd = parameterMap.get("pwd");
+			String problem = parameterMap.get("problem");
+			String answer = parameterMap.get("answer");
+			IRegisterService registerService = new RegisterServiceImpl();
 			boolean result = registerService.register(id, pwd, problem, answer);
+			if (result) {
+	        	String name = id;
+				int sex = 0;
+				String dscp = "这个人很懒,什么也没有留下...";
+				INewUserService newUserService = new NewUserServiceImpl();
+				newUserService.newUser(id, name, sex, dscp);
+			}
 			response.setContentType("text/json; charset=utf-8");
 	        PrintWriter out = response.getWriter();
 	        Map<String, Object> jsonMap = new HashMap<String, Object>();

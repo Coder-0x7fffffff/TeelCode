@@ -83,7 +83,21 @@ public:
 
     }
 
-    int judge(const std::string& code, const std::string& samplePath, const std::string& dirPath, LanguageType languageType) {
+    /* just execute the code, no output */
+    int execute(const std::string& code, const std::string& dirPath, const std::string& input, LanguageType languageType) {
+        int exitCode = 1;
+        createFiles(dirPath, languageType);
+        if (0 == this->input(code, dirPath, languageType)) {
+            if (0 == compile(dirPath, languageType)) {
+                run(input, dirPath, languageType, 0);
+                exitCode = 0;
+            }
+        }
+        output();
+        return exitCode;
+    }
+
+    int judge(const std::string& code, const std::string& dirPath, const std::string& samplePath, LanguageType languageType) {
         int exitCode = 1;
         createFiles(dirPath, languageType);
         if (0 == input(code, dirPath, languageType)) {
@@ -92,7 +106,6 @@ public:
                 exitCode = 0;
             }
         }
-        /* input error? */
         output();
         return exitCode;
     }
@@ -457,6 +470,27 @@ private:
             watchRun(pid, timeLimit, memLimit, languageType);
             judgeMain(sampleOutFilePath);
         }
+    }
+
+    /* execute version */
+    int run(const std::string& input, const std::string& dirPath, LanguageType languageType, int) {
+        Logger::log(StringUtil::format("Run!..."));
+        /* For c & cpp, the time waste limit is 1s, memory limit is 64MB, others are 2s and 128MB */
+        int timeLimit = 1000;      // 1 s
+        int memLimit = 640 * 1024; // 64 MB
+        if (LanguageType::C != languageType && LanguageType::CPP != languageType) {
+            timeLimit *= 2;
+            memLimit *= 2;
+        }
+        Logger::log(StringUtil::format("fork!..."));
+        resultSet = ResultSet();
+        FileUtil::writeFile(stdinFilePath, input);
+        int pid = fork();
+        if (0 == pid) {
+            runMain(timeLimit, memLimit, languageType);
+        }
+        watchRun(pid, timeLimit, memLimit, languageType);
+        resultSets.push_back(resultSet);
     }
 
     /* 4. output the result */

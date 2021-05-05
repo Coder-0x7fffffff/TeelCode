@@ -46,7 +46,7 @@ public class Global {
 		/* init logger */
 		logger = Logger.getGlobal();
 		try {
-			FileHandler fileHandler = new FileHandler("oj.log", true);
+			FileHandler fileHandler = new FileHandler("/usr/local/oj/oj.log", true);
 			fileHandler.setFormatter(new SimpleFormatter());
 			logger.addHandler(fileHandler);
 		} catch (SecurityException e) {

@@ -15,6 +15,6 @@ int main() {\n\
 }";
     std::string dirPath = "OJCore/tmp";
     std::string samplePath = "OJCore/sample";
-    judge.judge(code, samplePath, dirPath, LanguageType::CPP);
+    judge.execute(code, dirPath, "1 1", LanguageType::CPP);
     return 0;
 }

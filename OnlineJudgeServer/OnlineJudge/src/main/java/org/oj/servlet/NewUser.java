@@ -75,15 +75,15 @@ public class NewUser extends HttpServlet {
 			token = paramterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			String name = paramterMap.get("name");
-			int sex = -1;
-			String psex = paramterMap.get("sex");
-			if (null != psex) {
-				sex = Integer.parseInt(psex);
-			}
-			String dscp = paramterMap.get("dscp");
-			INewUserService newUserService = new NewUserServiceImpl();
 			try {
+				String name = paramterMap.get("name");
+				int sex = -1;
+				String psex = paramterMap.get("sex");
+				if (null != psex) {
+					sex = Integer.parseInt(psex);
+				}
+				String dscp = paramterMap.get("dscp");
+				INewUserService newUserService = new NewUserServiceImpl();
 				boolean result = newUserService.newUser(Global.getToken(token).uid, name, sex, dscp);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

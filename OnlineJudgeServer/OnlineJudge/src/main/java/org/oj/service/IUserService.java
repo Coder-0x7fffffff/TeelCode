@@ -3,10 +3,10 @@ package org.oj.service;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.oj.entity.UserProblem;
+import org.oj.model.UserRecordModel;
 
 public interface IUserService {
 
-	public List<UserProblem> getRecord(String id) throws SQLException;
+	public List<UserRecordModel> getRecord(String id) throws SQLException;
 	
 }

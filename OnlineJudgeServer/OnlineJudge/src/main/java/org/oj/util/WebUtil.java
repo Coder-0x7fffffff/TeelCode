@@ -1,9 +1,6 @@
 package org.oj.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -51,22 +48,14 @@ public class WebUtil {
 	}
 	
 	public static Map<String, String> parseRequest(HttpServletRequest request) throws IOException {
-		InputStream inputStream = request.getInputStream();
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-		String temp = null;
-		StringBuffer stringBuffer = new StringBuffer();
-		while (null != (temp = bufferedReader.readLine())) {
-			stringBuffer.append(temp);
-		}
+		Map<String, String[]> parameterMap = request.getParameterMap();
 		Map<String, String> result = new HashMap<String, String>();
-		String[] params = stringBuffer.toString().split("&");
-		for (String param : params) {
-			String[] kv = param.split("=");
-			String key = URLDecoder.decode(kv[0], "UTF-8");
-			String value = null;
-			if (kv.length > 1) {
-				value = URLDecoder.decode(kv[1], "UTF-8");
+		for (String key : parameterMap.keySet()) {
+			StringBuffer stringBuffer = new StringBuffer();
+			for (String val : parameterMap.get(key)) {
+				stringBuffer.append(val);
 			}
+			String value = URLDecoder.decode(stringBuffer.toString(), "UTF-8");
 			result.put(key, value);
 		}
 		return result;

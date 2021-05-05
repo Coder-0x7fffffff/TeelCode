@@ -10,6 +10,8 @@ public class JNAUtil {
 		CLibrary instace = Native.load("ojcore", CLibrary.class);
 		
 		void judge(String code, String dirPath, String samplePath, int languageType);
+		
+		void execute(String code, String dirPath, String input, int languageType);
 	}
 	
 	private JNAUtil() {}
@@ -18,5 +20,8 @@ public class JNAUtil {
 		CLibrary.instace.judge(code, dirPath, samplePath, languageType);
 	}
 	
+	public static void execute(String code, String dirPath, String input, int languageType) {
+		CLibrary.instace.execute(code, dirPath, input, languageType);
+	}
 	
 }
