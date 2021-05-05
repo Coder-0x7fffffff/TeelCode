@@ -3,7 +3,7 @@ const fs = require("fs")
 const cookieParser = require("cookie-parser")
 const bodyParser = require("body-parser")
 const {getPageFrame} = require("./PageConstructor");
-const {setOJServer, getOJServer, checkUser, login, register, queryQuestion, queryComments, reply, getUIInfo, queryQuestionList, run, submit, userinfo, changePassword, changeName, changeDscp, queryClasses, addClass, getDifficulties, getNextProblemId, addQuestion, deleteClassification, deleteProblem, handleRequest} = require("./HTTPHandler");
+const {setOJServer, getOJServer, checkUser, login, register, queryQuestion, queryComments, reply, getUIInfo, queryQuestionList, run, submit, userinfo, changePassword, changeName, changeDscp, queryClasses, addClass, getDifficulties, getNextProblemId, addQuestion, deleteClassification, deleteProblem, handleRequest, getSubmits} = require("./HTTPHandler");
 
 const server = express()
 let port = 80
@@ -159,6 +159,9 @@ function start(port){
     })
     server.post('/deleteProblem', (req, res)=>{
         handleRequest(req, res, true, deleteProblem)
+    })
+    server.post('/getSubmits', (req, res)=>{
+        handleRequest(req, res, true, getSubmits)
     })
     //listen
     server.listen(port,()=>{

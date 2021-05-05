@@ -448,6 +448,14 @@ function deleteProblem(req, res){
     })
 }
 
+function getSubmits(req, res){
+    let body = req.body
+    let requestData = {token:req.cookies['token'], uid: body['uid'], page:body['page'], offset:body['offset']}
+    httpRequest(OJServer + "GetUserRecord", "POST", requestData).then(function (r){
+        res.send({err:null,result:r})
+    })
+}
+
 function handleRequest(req, res, shouldOnline, callback){
     if(shouldOnline){
         //judge online
@@ -489,4 +497,5 @@ module.exports = {
     deleteClassification,
     deleteProblem,
     handleRequest,
+    getSubmits
 }

@@ -2,6 +2,7 @@ class Model{
 
     #data = null
     #page = 1
+    #page2 = 1
 
     initPanel(){
         let isAdmin = getCookie("isAdmin")
@@ -101,21 +102,7 @@ class Model{
                     '        <th class="table_head">状态</th>\n' +
                     '    </tr>\n' +
                     '</table>'
-                let table = document.getElementById("question_table")
-                for(let i=0;i<this.#data["problems"].length;i++){
-                    let row = table.insertRow()
-                    if(i%2===0)
-                        row.style.background = "#fafafafa"
-                    let cell = row.insertCell()
-                    cell.style.cssText = "text-align: center"
-                    cell.innerText=this.#data["problems"][i]['pid'].toString()
-                    cell = row.insertCell()
-                    cell.style.cssText = "text-align: left"
-                    cell.innerText=this.#data["problems"][i]['pname'].toString()
-                    cell = row.insertCell()
-                    cell.style.cssText = "text-align: center"
-                    cell.innerText=this.#data["problems"][i]['state'].toString()
-                }
+                this.insertProblems(true)
                 break
             case "修改密码":
                 document.getElementById("detail_detail").innerHTML = '' +
@@ -356,6 +343,31 @@ class Model{
         this.#page = page
         //reset color
         resetTableColor(manageTable)
+    }
+
+    insertProblems(reset = false){
+        let table = document.getElementById("question_table")
+        if(reset){
+            while(table.rows.length>1)table.rows[table.rows.length-1].remove()
+            this.#page2 = 1
+        }
+        let ret = postAndWait("/getSubmits",{page:this.#page2,offset:10,uid:getCookie("id")})
+        let problems = ret["result"]
+        for(let i=0;i<problems.length;i++){
+            let row = table.insertRow()
+            if(i%2===0)
+                row.style.background = "#fafafafa"
+            let cell = row.insertCell()
+            cell.style.cssText = "text-align: center"
+            cell.innerText=problems[i]['pid'].toString()
+            cell = row.insertCell()
+            cell.style.cssText = "text-align: left"
+            cell.innerText=problems[i]['pname'].toString()
+            cell = row.insertCell()
+            cell.style.cssText = "text-align: center"
+            cell.innerText=problems[i]['pstate'].toString()
+        }
+        this.#page2++
     }
 
     constructor() {
