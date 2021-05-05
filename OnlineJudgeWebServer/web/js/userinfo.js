@@ -347,6 +347,7 @@ class Model{
         }
         //add diffs
         let diff_elem = document.getElementById("select_diff")
+        while(diff_elem.options.length>0)diff_elem.options.remove(0)
         let diffs = {"1":"简单","2":"中等","3":"困难"}
         let keys = Object.keys(diffs).sort()
         for(let i=0;i<keys.length;i++){

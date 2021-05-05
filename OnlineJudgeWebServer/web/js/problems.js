@@ -94,7 +94,6 @@ class ProblemsWebModel{
             postNoWait("/submit",{time:timeToStr(new Date()),id:model.#question_id,platform:that.#lang,code:that.#editor.getValue()},function (ajax){
                 if (ajax.readyState===4 && ajax.status===200){
                     let ret = JSON.parse(ajax.responseText)
-                    console.log(ret)
                     if(ret['err']==null){
                         let output = ret['result']
                         let outputStr = ""
@@ -437,8 +436,17 @@ class ProblemsWebModel{
                         if (ajax.readyState===4 && ajax.status===200){
                             let ret = JSON.parse(ajax.responseText)
                             if(ret['err']==null){
-                                let result = ret['result']
-                                that.showOutputOfRun(result["output"])
+                                let output = JSON.parse(ret['result']['result'])
+                                let str = "----------执行----------\n"
+                                str += "内存："+output[1]["MemoryUsed"]+"KB\n"
+                                str += "耗时："+output[1]["TimeUsed"]+"MS\n"
+                                str += "----------输出----------\n"
+                                if(output[1]["ResultInfo"]===""){
+                                    str+=ret['result']['output']
+                                }else{
+                                    str+=output[1]["ResultInfo"]
+                                }
+                                that.showOutputOfRun(str)
                             }else{
                                 that.showOutputOfRun(ret['err'])
                             }
@@ -470,7 +478,7 @@ class ProblemsWebModel{
         run_code_bnt.innerText = "确定"
         //show
         let run_output = document.getElementById("run_output")
-        run_output.innerText = str
+        run_output.value = str
     }
 }
 
