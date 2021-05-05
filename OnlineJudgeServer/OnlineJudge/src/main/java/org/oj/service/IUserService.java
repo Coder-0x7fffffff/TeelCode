@@ -7,6 +7,8 @@ import org.oj.model.UserRecordModel;
 
 public interface IUserService {
 
-	public List<UserRecordModel> getRecord(String id) throws SQLException;
+	public int getRecordCount(String id) throws SQLException;
+	
+	public List<UserRecordModel> getRecord(String id, int page, int pageSize) throws SQLException;
 	
 }

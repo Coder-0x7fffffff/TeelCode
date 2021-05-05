@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
-import org.oj.model.UserRecordModel;
 import org.oj.service.IUserService;
 import org.oj.service.impl.UserServiceImpl;
 import org.oj.util.WebUtil;
@@ -22,17 +20,18 @@ import org.oj.util.WebUtil;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class GetUserRecord
+ * Servlet implementation class GetUserRecordCount
  */
-@WebServlet("/GetUserRecord")
-public class GetUserRecord extends HttpServlet {
+@WebServlet("/GetUserRecordCount")
+public class GetUserRecordCount extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetUserRecord() {
+    public GetUserRecordCount() {
         super();
+        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -56,12 +55,10 @@ public class GetUserRecord extends HttpServlet {
 		if (Global.verifyToken(token)) {
 	        try {
 	        	String uid = paramterMap.get("id");
-	        	int page = Integer.parseInt(paramterMap.get("page"));
-	        	int pageSize = Integer.parseInt(paramterMap.get("offset"));
 		        IUserService userService = new UserServiceImpl();
-				List<UserRecordModel> userRecordList = userService.getRecord(uid, page, pageSize);
+				int count = userService.getRecordCount(uid);
 		        Map<String, Object> jsonMap = new HashMap<String, Object>();
-		        jsonMap.put("record", userRecordList);
+		        jsonMap.put("count", count);
 		        String json = JSON.toJSONString(jsonMap);
 		        response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

@@ -29,6 +29,21 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 	private static final ResultHandler SELECT_RESULT_HANDLER = new SelectResultHandler();
 
 	@Override
+	public int getUserProblemCount(String uid) throws SQLException{
+		String sql = "SELECT COUNT(*) FROM UserProblem";
+		Object[] params = null;
+		return (int) DBUtil.query(sql, params, new ResultHandler() {
+			@Override
+			public Object handle(ResultSet resultSet) throws SQLException {
+				while (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+				return 0;
+			}
+		});
+	}
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public int findStateByUidAndPid(String uid, int pid) throws SQLException {
 		String sql = "SELECT * FROM UserProblem WHERE u_id=? AND p_id=?";
@@ -39,9 +54,9 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<UserProblem> findUserProblem(String uid) throws SQLException {
-		String sql = "SELECT * FROM UserProblem WHERE u_id=?";
-		Object[] params = { uid };
+	public List<UserProblem> findUserProblem(String uid, int page, int pageSize) throws SQLException {
+		String sql = "SELECT * FROM UserProblem WHERE u_id=? LIMIT ?, ?";
+		Object[] params = { uid, (page - 1) * pageSize, pageSize };
 		return (List<UserProblem>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
 	
