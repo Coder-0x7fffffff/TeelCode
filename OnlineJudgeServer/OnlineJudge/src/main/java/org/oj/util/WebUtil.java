@@ -1,6 +1,7 @@
 package org.oj.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -48,14 +49,23 @@ public class WebUtil {
 	}
 	
 	public static Map<String, String> parseRequest(HttpServletRequest request) throws IOException {
-		Map<String, String[]> parameterMap = request.getParameterMap();
+		InputStream inputStream = request.getInputStream();
+		int len = -1;
+		byte[] bytes = new byte[4096];
+		StringBuffer stringBuffer = new StringBuffer();
+		while (-1 != (len = inputStream.read(bytes))) {
+			stringBuffer.append(new String(bytes, 0, len));
+		}
 		Map<String, String> result = new HashMap<String, String>();
-		for (String key : parameterMap.keySet()) {
-			StringBuffer stringBuffer = new StringBuffer();
-			for (String val : parameterMap.get(key)) {
-				stringBuffer.append(val);
+		String url = stringBuffer.toString();
+		String[] params = url.split("&");
+		for (String param : params) {
+			String[] kv = param.split("=");
+			String key = URLDecoder.decode(kv[0], "UTF-8");
+			String value = null;
+			if (kv.length > 1) {
+				value = URLDecoder.decode(kv[1], "UTF-8");
 			}
-			String value = URLDecoder.decode(stringBuffer.toString(), "UTF-8");
 			result.put(key, value);
 		}
 		return result;

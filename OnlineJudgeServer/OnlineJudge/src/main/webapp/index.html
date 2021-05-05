@@ -150,12 +150,21 @@
 		token=<input type="text" name="token"><br/>
 		<input type="submit" value="提交代码">
 	</form>
-测试获取用户记录:
+测试获取用户记录(OK):
 	<form method="post" action="GetUserRecord">
 		token=<input type="text" name="token"><br/>
+		id=<input type="text" name="id"><br/>
+		page=<input type="text" name="page"><br/>
+		offset=<input type="text" name="offset"><br/>
 		<input type="submit" value="获取用户记录">
 	</form>
-测试获取题目提交记录:
+测试获取用户记录总数(OK):
+	<form method="post" action="GetUserRecordCount">
+		token=<input type="text" name="token"><br/>
+		id=<input type="text" name="id"><br/>
+		<input type="submit" value="获取用户记录">
+	</form>
+测试获取题目提交记录(OK):
 	<form method="post" action="GetProblemRecord">
 		token=<input type="text" name="token"><br/>
 		pid=<input type="text" name="pid"><br/>

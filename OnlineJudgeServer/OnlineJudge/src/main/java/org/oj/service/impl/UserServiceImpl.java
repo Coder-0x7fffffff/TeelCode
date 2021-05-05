@@ -18,13 +18,18 @@ import org.oj.service.IUserService;
 
 public class UserServiceImpl implements IUserService {
 
-	IUserProblemDao userRecordDao = new UserProblemDaoImpl();
+	IUserProblemDao userProblemDao = new UserProblemDaoImpl();
 	IOJUserDao ojuserDao = new OJUserDaoImpl();
 	IProblemDao problemDao = new ProblemDaoImpl();
 	
 	@Override
-	public List<UserRecordModel> getRecord(String id) throws SQLException {
-		List<UserProblem> userProblemList = userRecordDao.findUserProblem(id);
+	public int getRecordCount(String id) throws SQLException {
+		return userProblemDao.getUserProblemCount(id);
+	}
+	
+	@Override
+	public List<UserRecordModel> getRecord(String id, int page, int pageSize) throws SQLException {
+		List<UserProblem> userProblemList = userProblemDao.findUserProblem(id, page, pageSize);
 		List<UserRecordModel> userRecordModelList = new ArrayList<UserRecordModel>();
 		for (UserProblem userProblem : userProblemList) {
 			int pid = userProblem.getPid();
