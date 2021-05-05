@@ -415,6 +415,7 @@ function addQuestion(req, res){
         classification:body['classification']
     }
     httpRequest(OJServer+"AddProblem","POST", requestData).then(function (r){
+        console.log(r)
         if(r["result"] === true){
             res.send({err:null})
         }else{
