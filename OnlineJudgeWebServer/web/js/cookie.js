@@ -38,7 +38,7 @@ function getCookie(name) {
  * @param  {Number} expires
  */
 function editCookie(name, value, expires){
-    var cookieString = name + "=" + escape(value);
+    var cookieString = name + "=" + encodeURI(value);
     if (expires > 0) {
         var date = new Date();
         date.setTime(date.getTime() + expires * 1000);
@@ -53,5 +53,5 @@ function editCookie(name, value, expires){
  */
 function removeCookie(name) {
     // 设置已过期，系统会立刻删除cookie
-    setCookie(name, '1', -1);
+    setCookie(name, '', 1);
 }

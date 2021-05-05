@@ -10,11 +10,17 @@ class RegisterWebModel{
                 showError("两次密码输入不一致")
                 return
             }
-            let ajax = getAjax()
-            ajax.open("post","/register",false)
-            ajax.setRequestHeader("Content-Type","application/json")
-            ajax.send(JSON.stringify({id:id,password:password,question:question,answer:answer}))
-            showError(ajax.responseText)
+            postNoWait("/register", {id:id,password:password,question:question,answer:answer}, function (ajax){
+                if (ajax.readyState===4 && ajax.status===200){
+                    let ret = JSON.parse(ajax.responseText)
+                    if(ret['err']==null){
+                        showError("注册成功",function (){window.location.href = "./login"})
+
+                    }else{
+                        showError(ret['err'],)
+                    }
+                }
+            })
         })
     }
 }

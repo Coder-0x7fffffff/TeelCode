@@ -61,7 +61,7 @@
 }
 
 .info_panel{
-    width: 50%;
+    width: 80%;
     margin-left: 25%;
 }
 
@@ -81,18 +81,18 @@
 
 .info_label{
     text-align: right;
-    width: 30%;
+    width: 15%;
     display: inline-block;
 }
 
 .info_text{
     text-align: left;
-    width: 65%;
+    width: 75%;
     display: inline-block;
 }
 
 .info_self_name{
-    width: 40%;
+    width: 65%;
 }
 
 .info_self_change_name_bnt{
@@ -145,3 +145,49 @@
     width: 102%;
     height: 32px;
 }
+
+.bnt_add{
+    height: 30px;
+    float: right;
+}
+
+.add_dialog {
+    border-radius: 5px;
+    border-width: 0;
+    box-shadow: 0 0 5px #66666666;
+}
+
+.more_bnt{
+    width: 10%;
+    height: 30px;
+    margin-left: 45%;;
+}
+
+.question_add_dialog{
+    width: 80%;
+    border-radius: 5px;
+    border-width: 0;
+    box-shadow: 0 0 5px #66666666;
+}
+
+.question_add_bnt{
+    height: 25px;
+    width: 60px;
+    float: right;
+    margin-left: 10px;
+}
+
+.input_textarea{
+    width: 99.5%;
+    height: 200px;
+}
+
+.tips{
+    margin-left: 5px;
+    color: grey;
+    vertical-align: center;
+}
+.label_gap{
+    margin-left: 5%;
+}
+

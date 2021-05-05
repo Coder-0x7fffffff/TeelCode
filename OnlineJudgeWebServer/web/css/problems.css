@@ -239,6 +239,38 @@ body{
     height: 28px;
 }
 
+.run_dialog{
+    border-radius: 5px;
+    border-width: 0;
+    width: 40%;
+    height: 40%;
+    box-shadow: 0 0 5px #66666666;
+}
+
+.run_input_msg{
+    width: 98%;
+    height: 50%;
+    margin-left: 1%;
+    text-align: left;
+    resize: none;
+    outline: none;
+}
+
+.run_output_msg{
+    width: 98%;
+    height: 37%;
+    margin-left: 1%;
+    text-align: left;
+    resize: none;
+    outline: none;
+}
+
+.run_bnt{
+    width: 99%;
+    margin-left: 1%;
+    height: 28px;
+}
+
 /* code mirror editor */
 .CodeMirror{
     font-size: 18px;

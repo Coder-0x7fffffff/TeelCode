@@ -24,7 +24,7 @@
 
   // node
   function mk_block_inspect() {
-    var util = require("util");
+    var util = require("ServerUtil");
     return "Markdown.mk_block( " +
             util.inspect(this.toString()) +
             ", " +

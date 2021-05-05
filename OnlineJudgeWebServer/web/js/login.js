@@ -1,5 +1,9 @@
 class LoginWebModel{
     constructor() {
+        removeCookie("token")
+        removeCookie("id")
+        removeCookie("username")
+        removeCookie("isAdmin")
         document.getElementById("login_bnt").addEventListener('click', ()=>{
             let id = document.getElementById("id_input").value
             let password = document.getElementById("password_input").value
@@ -15,6 +19,7 @@ class LoginWebModel{
             setCookie("token", ret["token"],-1)
             setCookie("id", ret["id"],-1)
             setCookie("username", ret["username"],-1)
+            setCookie("isAdmin", ret['isAdmin'], -1)
             window.location.href="/"
         })
     }

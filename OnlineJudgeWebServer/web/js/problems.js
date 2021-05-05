@@ -1,7 +1,7 @@
 class ProblemsWebModel{
 
     #editor = null
-    #lang2mode = {"java":"text/x-java", "c":"text/x-csrc", "c++":"text/x-c++src", "python2":"text/x-python", "python3":"text/x-python"}
+    #lang2mode = {"c":"text/x-csrc", "c++":"text/x-c++src","java":"text/x-java", "python2":"text/x-python", "python3":"text/x-python"}
     #lang = null
     #question_id = null
     replyContext = null
@@ -55,7 +55,7 @@ class ProblemsWebModel{
             showError(ret['err'])
         }
         //load comments
-        ret = postAndWait("/queryComments",{problem_id:this.#question_id,page:0,offset:10})
+        ret = postAndWait("/queryComments",{problem_id:this.#question_id,page:1,offset:10})
         if(ret['err']==null){
             let comments = ret['comments']
             for(let i=0;i<comments.length;i++){
@@ -82,29 +82,36 @@ class ProblemsWebModel{
         //load editor
         this.setLanguage("java")
         //register button listener
-        let run_bnt = document.getElementById("run_bnt")
-        let submit_bnt = document.getElementById("submit_bnt")
+        let run_bnt = document.getElementById("run_bnt")//run
         run_bnt.addEventListener("click",function (){
-            that.showAndWaitOutput()
-            postNoWait("/run",{token:getCookie("token"), platform:that.#lang,code:that.#editor.getValue()},function (ajax){
-                if (ajax.readyState===4 && ajax.status===200){
-                    let ret = JSON.parse(ajax.responseText)
-                    if(ret['err']==null){
-                        that.showOutput(ret['result'])
-                    }else{
-                        that.showOutput(ret['err'])
-                    }
-                }
-            })
+            that.showRunDialog()
         })
+        let submit_bnt = document.getElementById("submit_bnt")//submit
         submit_bnt.addEventListener("click",function (){
             that.showAndWaitOutput()
             /*submit*/
-            postNoWait("/submit",{token:getCookie("token"), platform:that.#lang,code:that.#editor.getValue()},function (ajax){
+            let states = ["等待评测","正在评测","编译错误","答案正确","运行错误","格式错误","答案错误","运行超时","内存超限"]
+            postNoWait("/submit",{time:timeToStr(new Date()),id:model.#question_id,platform:that.#lang,code:that.#editor.getValue()},function (ajax){
                 if (ajax.readyState===4 && ajax.status===200){
                     let ret = JSON.parse(ajax.responseText)
+                    console.log(ret)
                     if(ret['err']==null){
-                        that.showOutput(ret['result'])
+                        let output = ret['result']
+                        let outputStr = ""
+                        let count = output["count"]
+                        for(let i=1;i<=count;i++){
+                            let str = "----------测试"+i.toString()+"----------\n"
+                            let state = output[i.toString()]["ResultCode"]
+                            state = state<states.length?states[state]:state;
+                            str +=
+                                "状态："+state+"\n" +
+                                "内存："+output[i.toString()]["MemoryUsed"]+"KB\n" +
+                                "耗时："+output[i.toString()]["TimeUsed"]+"MS\n" +
+                                ((state !== "答案正确")?("输出：\n"+output[i.toString()]["ResultInfo"]):"")+
+                                "\n"
+                            outputStr += str
+                        }
+                        that.showOutput(outputStr)
                     }else{
                         that.showOutput(ret['err'])
                     }
@@ -115,11 +122,11 @@ class ProblemsWebModel{
 
     //comment control
     insertComment(comment){
-        let cid = comment["cid"].toString()
+        let cid = comment["comments_id"].toString()
         let username = comment["username"]
         let img = comment["img"]
         let detail = comment["detail"]
-        let time = comment["time"]
+        let time = timeToStr(new Date(comment["time"]))
         let replies = comment["replies"]
         let coments_detail = document.getElementById("comments_detail")
         //ids
@@ -150,7 +157,7 @@ class ProblemsWebModel{
         if(replies.length>0){
             //insert replys
             for(let i=0;i<replies.length;i++) {
-                let subcid = replies[i]["cid"].toString()
+                let subcid = replies[i]["comments_id"].toString()
                 let subusername = replies[i]['username']
                 let subreply_username = replies[i]['reply_username']
                 let subtime = replies[i]['time']
@@ -279,7 +286,7 @@ class ProblemsWebModel{
     #replyConfirm(){
         //complete context
         model.replyContext['detail'] = document.getElementById("reply_text").value
-        model.replyContext['time'] = new Date().toString()
+        model.replyContext['time'] = timeToStr(new Date())
         let ret = postAndWait("/reply",model.replyContext)
         if(ret['err'] == null){
             //insert comment
@@ -409,6 +416,61 @@ class ProblemsWebModel{
         output_bnt.style.background = ""
         output_bnt.innerText = "确定"
         output_bnt.addEventListener("click", this.#clickConfirmOfOutputDialog)
+    }
+
+    showRunDialog(){
+        let dialog = document.getElementById("run_dialog")
+        let run_code_bnt = document.getElementById("run_code_bnt")
+        let run_output = document.getElementById("run_output")
+        run_code_bnt.style.background = ""
+        run_code_bnt.innerText = "执行"
+        run_code_bnt.addEventListener("click", function (event){
+            switch(event.target.innerText){
+                case "执行":{
+                    let run_code_bnt = document.getElementById("run_code_bnt")
+                    run_code_bnt.style.background = "#bbbbbb"
+                    run_code_bnt.innerText = ". . . . . ."
+                    //run
+                    let that = model
+                    let input = document.getElementById("run_input").value
+                    postNoWait("/run",{input:input,platform:that.#lang,code:that.#editor.getValue()},function (ajax){
+                        if (ajax.readyState===4 && ajax.status===200){
+                            let ret = JSON.parse(ajax.responseText)
+                            if(ret['err']==null){
+                                let result = ret['result']
+                                that.showOutputOfRun(result["output"])
+                            }else{
+                                that.showOutputOfRun(ret['err'])
+                            }
+                        }
+                    })
+                    break
+                }
+                case ". . . . . .":{
+                    break
+                }
+                case "确定":{
+                    let dialog = document.getElementById("run_dialog")
+                    let run_code_bnt = document.getElementById("run_code_bnt")
+                    run_code_bnt.style.background = ""
+                    run_code_bnt.innerText = "执行"
+                    run_code_bnt.removeEventListener("click", this.clickOnConfirm)
+                    dialog.close()
+                    break
+                }
+            }
+        })
+        run_output.innerText = "请在输入框中输入内容后,点击”执行“......"
+        dialog.showModal()
+    }
+
+    showOutputOfRun(str){
+        let run_code_bnt = document.getElementById("run_code_bnt")
+        run_code_bnt.style.background = ""
+        run_code_bnt.innerText = "确定"
+        //show
+        let run_output = document.getElementById("run_output")
+        run_output.innerText = str
     }
 }
 
