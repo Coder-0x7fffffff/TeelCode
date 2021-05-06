@@ -20,6 +20,8 @@ public interface IProblemDao {
 	public boolean updateProblem(int id, String name, int difficulty, int pass, int submit, String dscp, String inputs,
 			String outputs) throws SQLException;
 	
+	public boolean updateProbelm(int id, boolean updatePass) throws SQLException;
+	
 	public int getProblemCount() throws SQLException;
 	
 	public int getNextProblemId() throws SQLException;

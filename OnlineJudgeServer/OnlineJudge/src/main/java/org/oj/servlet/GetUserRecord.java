@@ -67,7 +67,7 @@ public class GetUserRecord extends HttpServlet {
 		        PrintWriter out = response.getWriter();
 		        out.print(json);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			}
 		} else {
 			/* */

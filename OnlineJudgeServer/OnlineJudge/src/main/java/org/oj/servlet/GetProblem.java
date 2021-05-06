@@ -83,7 +83,7 @@ public class GetProblem extends HttpServlet {
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			} 
 		} else {
 			/* */
