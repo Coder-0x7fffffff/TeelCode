@@ -124,6 +124,18 @@ public class ProblemDaoImpl implements IProblemDao {
 	}
 	
 	@Override
+	public boolean updateProbelm(int id, boolean updatePass) throws SQLException {
+		String sql = null;
+		if (updatePass) {
+			sql = "UPDATE Problem SET p_pass=p_pass+1, p_submit=p_submit+1 WHERE p_id=?";
+		} else {
+			sql = "UPDATE Problem SET p_submit=p_submit+1 WHERE p_id=?";
+		}
+		Object[] params = { id };
+		return 1 == DBUtil.update(sql, params);
+	}
+	
+	@Override
 	public int getProblemCount() throws SQLException {
 		String sql = "SELECT COUNT(*) FROM Problem";
 		Object[] params = null;
