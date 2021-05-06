@@ -58,30 +58,31 @@ public class AddClassification extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
-		try {
-			request.setCharacterEncoding("UTF-8");
-			Map<String, String> parameterMap = WebUtil.parseRequest(request);
-			String token = WebUtil.getToken(request);
-			if (null == token) {
-				token = parameterMap.get("token");
-			}
-			if (Global.verifyToken(token)) {
+		request.setCharacterEncoding("UTF-8");
+		Map<String, String> parameterMap = WebUtil.parseRequest(request);
+		String token = WebUtil.getToken(request);
+		if (null == token) {
+			token = parameterMap.get("token");
+		}
+		if (Global.verifyToken(token)) {
+			try {
 				int id = Integer.parseInt(parameterMap.get("id"));
 				String name = parameterMap.get("name");
 				IClassificationService classificationService = new ClassificationServiceImpl();
 				boolean result = classificationService.addClassification(id, name);
 				response.setContentType("text/json; charset=utf-8");
-		        PrintWriter out = response.getWriter();
-		        Map<String, Object> jsonMap = new HashMap<String, Object>();
-		        jsonMap.put("result", result);
-		        String json = JSON.toJSONString(jsonMap);
-		        out.print(json);
-			} else {
-				/* */
+				PrintWriter out = response.getWriter();
+				Map<String, Object> jsonMap = new HashMap<String, Object>();
+				jsonMap.put("result", result);
+				String json = JSON.toJSONString(jsonMap);
+				out.print(json);
+			} catch (SQLException e) {
+				Global.logger.info("Exception :" + e.getMessage());
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} else {
+			/* */
 		}
+		
 	}
 
 }

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.common.Global;
 import org.oj.service.INewUserService;
 import org.oj.service.IRegisterService;
 import org.oj.service.impl.NewUserServiceImpl;
@@ -86,11 +87,9 @@ public class Register extends HttpServlet {
 	        jsonMap.put("result", result);
 	        String json = JSON.toJSONString(jsonMap);
 	        out.print(json);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
+		} catch (SQLException | NoSuchAlgorithmException e) {
+			Global.logger.info("Exception :" + e.getMessage());
+		} 
 	}
 
 }

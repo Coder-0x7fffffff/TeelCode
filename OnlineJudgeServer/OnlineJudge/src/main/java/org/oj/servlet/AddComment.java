@@ -59,14 +59,14 @@ public class AddComment extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int pid = Integer.parseInt(parameterMap.get("problem_id"));
-			String uid = parameterMap.get("username");
-			String time = parameterMap.get("time");
-			String detail = parameterMap.get("detail");
-			int cfaid = Integer.parseInt(parameterMap.get("parent_comment_id"));
-			String ruid = parameterMap.get("reply_username");
-			ICommentsService commentService = new CommentsServiceImpl();
 			try {
+				int pid = Integer.parseInt(parameterMap.get("problem_id"));
+				String uid = parameterMap.get("username");
+				String time = parameterMap.get("time");
+				String detail = parameterMap.get("detail");
+				int cfaid = Integer.parseInt(parameterMap.get("parent_comment_id"));
+				String ruid = parameterMap.get("reply_username");
+				ICommentsService commentService = new CommentsServiceImpl();
 				int cid = commentService.addComment(uid, pid, cfaid, ruid, detail, time);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
@@ -76,9 +76,9 @@ public class AddComment extends HttpServlet {
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			} catch (ParseException e) {
-				e.printStackTrace();
+				Global.logger.info("time error :" + e.getMessage());
 			}
 			
 		} else {

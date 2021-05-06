@@ -56,7 +56,7 @@ public class UpdateUser extends HttpServlet {
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("SQL Error :" + e.getMessage());
 			}
 		} else {
 			/* */
@@ -75,15 +75,15 @@ public class UpdateUser extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			String name = parameterMap.get("name");
-			int sex = -1;
-			String psex = parameterMap.get("sex");
-			if (null != psex) {
-				sex = Integer.parseInt(psex);
-			}
-			String dscp = parameterMap.get("dscp");
-			IUpdateUserService updateUserService = new UpdateUserServiceImpl();
 			try {
+				String name = parameterMap.get("name");
+				int sex = -1;
+				String psex = parameterMap.get("sex");
+				if (null != psex) {
+					sex = Integer.parseInt(psex);
+				}
+				String dscp = parameterMap.get("dscp");
+				IUpdateUserService updateUserService = new UpdateUserServiceImpl();
 				boolean result = updateUserService.updateUser(Global.getToken(token).uid, name, sex, dscp);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
@@ -92,7 +92,7 @@ public class UpdateUser extends HttpServlet {
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			}
 		} else {
 			/* */

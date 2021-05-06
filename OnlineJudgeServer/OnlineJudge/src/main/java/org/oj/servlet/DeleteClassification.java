@@ -52,9 +52,9 @@ public class DeleteClassification extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int cid = Integer.parseInt(parameterMap.get("id"));
-			IClassificationService classificationService = new ClassificationServiceImpl();
 			try {
+				int cid = Integer.parseInt(parameterMap.get("id"));
+				IClassificationService classificationService = new ClassificationServiceImpl();
 				boolean result = classificationService.deleteClassification(cid);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

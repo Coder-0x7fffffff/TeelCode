@@ -43,61 +43,61 @@ public class Submit extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String token = WebUtil.getToken(request);
 		if (Global.verifyToken(token)) {
-			/* problem id */
-			int pid = 1;
-			String code = "#include <iostream>\n"
-					+ "#include <vector>\n"
-					+ "using namespace std;\n"
-					+ "int main() {\n"
-					+ "    ios::sync_with_stdio(false);\n"
-					+ "    int a, b;\n"
-					+ "    while (cin >> a >> b){\n"
-					+ "        printf(\"%d\\n\", a + b);\n"
-					+ "    }\n"
-					+ "    return 0;\n"
-					+ "}";
-			int language = 1;
-			java.sql.Timestamp time = DateUtil.toSQLDate(new java.util.Date());
-			String dirPath = "rid" + ConcurrencyUtil.nextId();
-			Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
-			String samplePath = "ojsample/" + pid;
-			/* If java, add package header */
-			if (2 == language) {
-				code = "package ojrecord." + dirPath + ";\n" + code;
-			}
-			dirPath = "ojrecord/" + dirPath;
-			FileUtil.mkdirs(dirPath);
-			JNAUtil.judge(code, dirPath, samplePath, language);
-			String resJson = FileUtil.readFromFile(dirPath + "/Main.res");
-			JSONObject jsonObject = JSON.parseObject(resJson);
-			int pstate = 1;
-			int totalTimeUsage = 0;
-			int maxMemUsage = 0;
-			String resultInfo = "";
-			int count = (int) jsonObject.getInteger("count");
-			for (int i = 1; i <= count; ++i) {
-				JSONObject cur = jsonObject.getJSONObject(String.valueOf(i));
-				int resultCode = cur.getInteger("ResultCode");
-				/* not AC */
-				if (3 != resultCode) {
-					pstate = 0;
-					totalTimeUsage = maxMemUsage = -1;
-					resultInfo = cur.getString("ResultInfo");
-				} else {
-					int timeUsage = cur.getInteger("TimeUsed");
-					int memUsage = cur.getInteger("MemoryUsed");	
-					totalTimeUsage += timeUsage;
-					maxMemUsage = Math.max(maxMemUsage, memUsage);
-				}
-			}
-			ISubmitService submitService = new SubmitServiceImpl();
 			try {
+				/* problem id */
+				int pid = 2;
+				String code = "#include <iostream>\n"
+						+ "#include <vector>\n"
+						+ "using namespace std;\n"
+						+ "int main() {\n"
+						+ "    ios::sync_with_stdio(false);\n"
+						+ "    int a, b;\n"
+						+ "    while (cin >> a >> b){\n"
+						+ "        printf(\"%d\\n\", a + b);\n"
+						+ "    }\n"
+						+ "    return 0;\n"
+						+ "}";
+				int language = 1;
+				java.sql.Timestamp time = DateUtil.toSQLDate(new java.util.Date());
+				String dirPath = "rid" + ConcurrencyUtil.nextId();
+				Global.logger.info("uid=" + Global.getToken(token).uid + " commit, Directory Path=" + dirPath);
+				String samplePath = "ojsample/" + pid;
+				/* If java, add package header */
+				if (2 == language) {
+					code = "package ojrecord." + dirPath + ";\n" + code;
+				}
+				dirPath = "ojrecord/" + dirPath;
+				FileUtil.mkdirs(dirPath);
+				JNAUtil.judge(code, dirPath, samplePath, language);
+				String resJson = FileUtil.readFromFile(dirPath + "/Main.res");
+				JSONObject jsonObject = JSON.parseObject(resJson);
+				int pstate = 1;
+				int totalTimeUsage = 0;
+				int maxMemUsage = 0;
+				String resultInfo = "";
+				int count = (int) jsonObject.getInteger("count");
+				for (int i = 1; i <= count; ++i) {
+					JSONObject cur = jsonObject.getJSONObject(String.valueOf(i));
+					int resultCode = cur.getInteger("ResultCode");
+					/* not AC */
+					if (3 != resultCode) {
+						pstate = 0;
+						totalTimeUsage = maxMemUsage = -1;
+						resultInfo = cur.getString("ResultInfo");
+					} else {
+						int timeUsage = cur.getInteger("TimeUsed");
+						int memUsage = cur.getInteger("MemoryUsed");	
+						totalTimeUsage += timeUsage;
+						maxMemUsage = Math.max(maxMemUsage, memUsage);
+					}
+				}
+				ISubmitService submitService = new SubmitServiceImpl();
 				submitService.submit(pid, Global.getToken(token).uid, pstate, time, totalTimeUsage, maxMemUsage, code, language, resultInfo);
+				response.setContentType("text/json; charset=utf-8");
+				response.getWriter().write(resJson);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			response.setContentType("text/json; charset=utf-8");
-			response.getWriter().write(resJson);
 		}
 		else {
 			/* */
@@ -165,7 +165,7 @@ public class Submit extends HttpServlet {
 			} catch (ParseException e) {
 				Global.logger.info("time error :" + parameterMap.get("time"));
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			}
 		} else {
 			/* */

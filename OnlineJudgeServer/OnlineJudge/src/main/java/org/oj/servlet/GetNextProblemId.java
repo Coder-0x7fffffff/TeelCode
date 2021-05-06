@@ -53,8 +53,8 @@ public class GetNextProblemId extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			IProblemService problemService = new ProblemServiceImpl();
 			try {
+				IProblemService problemService = new ProblemServiceImpl();
 				int pid = problemService.getNextProblemId();
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

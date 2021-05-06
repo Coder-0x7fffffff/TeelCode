@@ -40,11 +40,11 @@ public class AlterPassword extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String token = WebUtil.getToken(request);
 		if (Global.verifyToken(token)) {
-			String uid = Global.getToken(token).uid;
-			String answer = WebUtil.decode(request.getParameter("answer"));
-			String newpwd = WebUtil.decode(request.getParameter("newpwd"));
-			IAlterPasswordService alterPasswordService = new AlterPasswordServiceImpl();
 			try {
+				String uid = Global.getToken(token).uid;
+				String answer = WebUtil.decode(request.getParameter("answer"));
+				String newpwd = WebUtil.decode(request.getParameter("newpwd"));
+				IAlterPasswordService alterPasswordService = new AlterPasswordServiceImpl();
 				boolean result = alterPasswordService.verify(uid, answer) &&
 						alterPasswordService.alter(uid, newpwd);
 				response.setContentType("text/json; charset=utf-8");
@@ -88,10 +88,8 @@ public class AlterPassword extends HttpServlet {
 		        jsonMap.put("result", result);
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+			} catch (SQLException | NoSuchAlgorithmException e) {
+				Global.logger.info("Exception :" + e.getMessage());
 			} 
 		} else {
 			/* */

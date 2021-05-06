@@ -52,10 +52,10 @@ public class AlterClassification extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int cid = Integer.parseInt(parameterMap.get("id"));
-			String cname = parameterMap.get("newcname");
-			IClassificationService classificationService = new ClassificationServiceImpl();
 			try {
+				int cid = Integer.parseInt(parameterMap.get("id"));
+				String cname = parameterMap.get("newcname");
+				IClassificationService classificationService = new ClassificationServiceImpl();
 				boolean result = classificationService.alterClassificationName(cid, cname);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

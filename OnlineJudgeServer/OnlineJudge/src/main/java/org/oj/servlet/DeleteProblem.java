@@ -52,9 +52,9 @@ public class DeleteProblem extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			int pid = Integer.parseInt(parameterMap.get("id"));
-			IProblemService problemService = new ProblemServiceImpl();
 			try {
+				int pid = Integer.parseInt(parameterMap.get("id"));
+				IProblemService problemService = new ProblemServiceImpl();
 				boolean result = problemService.deleteProblem(pid);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();
@@ -63,7 +63,7 @@ public class DeleteProblem extends HttpServlet {
 		        String json = JSON.toJSONString(jsonMap);
 		        out.print(json);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			}
 		} else {
 			/* */

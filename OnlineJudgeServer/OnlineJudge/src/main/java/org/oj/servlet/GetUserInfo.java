@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.oj.common.Global;
 import org.oj.model.UserModel;
 import org.oj.service.IUserInfoService;
 import org.oj.service.impl.UserInfoServiceImpl;
@@ -44,20 +45,18 @@ public class GetUserInfo extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
-		request.setCharacterEncoding("UTF-8");
-		Map<String, String> parameterMap = WebUtil.parseRequest(request);
-		String uid = parameterMap.get("uid");
-		IUserInfoService userInfoService = new UserInfoServiceImpl();
 		try {
+			request.setCharacterEncoding("UTF-8");
+			Map<String, String> parameterMap = WebUtil.parseRequest(request);
+			String uid = parameterMap.get("uid");
+			IUserInfoService userInfoService = new UserInfoServiceImpl();
 			UserModel userModel = userInfoService.getUserInfo(uid);
 			response.setContentType("text/json; charset=utf-8");
 			PrintWriter out = response.getWriter();
 	        String json = JSON.toJSONString(userModel);
 	        out.print(json);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException | UnsupportedEncodingException e) {
+			Global.logger.info("Exception :" + e.getMessage());
 		}
 	}
 
