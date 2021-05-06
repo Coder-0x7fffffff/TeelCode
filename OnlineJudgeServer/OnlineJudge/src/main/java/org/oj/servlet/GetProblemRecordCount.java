@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,24 +13,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.oj.common.Global;
-import org.oj.model.CommentsModel;
-import org.oj.service.ICommentsService;
-import org.oj.service.impl.CommentsServiceImpl;
+import org.oj.service.IRecordService;
+import org.oj.service.impl.RecordServiceImpl;
 import org.oj.util.WebUtil;
 
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class GetComments
+ * Servlet implementation class GetProblemRecordCount
  */
-@WebServlet("/GetComments")
-public class GetComments extends HttpServlet {
+@WebServlet("/GetProblemRecordCount")
+public class GetProblemRecordCount extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetComments() {
+    public GetProblemRecordCount() {
         super();
     }
 
@@ -39,10 +37,7 @@ public class GetComments extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-		// problem_id;
-		// page;
-		// offset
+		// response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
@@ -51,27 +46,29 @@ public class GetComments extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
-		Map<String, String> parameterMap = WebUtil.parseRequest(request);
+		Map<String, String> paramterMap = WebUtil.parseRequest(request);
 		String token = WebUtil.getToken(request);
 		if (null == token) {
-			token = parameterMap.get("token");
+			token = paramterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			try {
-				int pid = Integer.parseInt(parameterMap.get("problem_id"));
-				int page = Integer.parseInt(parameterMap.get("page"));
-				int pageSize = Integer.parseInt(parameterMap.get("offset"));
-				ICommentsService commentService = new CommentsServiceImpl();
-				List<CommentsModel> commentsModelList = commentService.getComments(pid, page, pageSize);
-				response.setContentType("text/json; charset=utf-8");
-				PrintWriter out = response.getWriter();
-				Map<String, Object> jsonMap = new HashMap<String, Object>();
-				jsonMap.put("err", null);
-		        jsonMap.put("comments", commentsModelList);
-		        String json = JSON.toJSONString(jsonMap);
-		        out.print(json);
+	        try {
+	        	int pid = Integer.parseInt(paramterMap.get("pid"));
+	        	String uid = paramterMap.get("uid");
+	        	IRecordService recordService = new RecordServiceImpl();
+	        	int count = 0;
+	        	if (null == uid || uid.isEmpty()) {
+	        		count = recordService.getRecordCount(pid);
+	        	} else {
+	        		count = recordService.getRecordCount(pid, uid);
+	        	}
+		        Map<String, Object> resJsonMap = new HashMap<String, Object>();
+		        resJsonMap.put("count", count);
+		        response.setContentType("text/json; charset=utf-8");
+		        PrintWriter out = response.getWriter();
+		        out.print(JSON.toJSONString(resJsonMap));
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Global.logger.info("Exception :" + e.getMessage());
 			}
 		} else {
 			/* */

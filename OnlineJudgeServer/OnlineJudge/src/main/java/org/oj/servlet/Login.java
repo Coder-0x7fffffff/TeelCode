@@ -84,10 +84,8 @@ public class Login extends HttpServlet {
 	        jsonMap.put("token", token);
 	        String json = JSON.toJSONString(jsonMap);
 	        out.print(json);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+		} catch (SQLException | NoSuchAlgorithmException e) {
+			Global.logger.info("Exception :" + e.getMessage());
 		}
 	}
 

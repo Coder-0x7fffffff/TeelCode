@@ -30,8 +30,8 @@ public class UserProblemDaoImpl implements IUserProblemDao {
 
 	@Override
 	public int getUserProblemCount(String uid) throws SQLException{
-		String sql = "SELECT COUNT(*) FROM UserProblem";
-		Object[] params = null;
+		String sql = "SELECT COUNT(*) FROM UserProblem WHERE uid=?";
+		Object[] params = { uid };
 		return (int) DBUtil.query(sql, params, new ResultHandler() {
 			@Override
 			public Object handle(ResultSet resultSet) throws SQLException {

@@ -40,10 +40,10 @@ public class GetProblem extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String token = WebUtil.getToken(request);
 		if (Global.verifyToken(token)) {
-			String uid = Global.getToken(token).uid;
-			int pid = Integer.parseInt(WebUtil.decode(request.getParameter("id")));
-			IProblemService problemService = new ProblemServiceImpl();
 			try {
+				String uid = Global.getToken(token).uid;
+				int pid = Integer.parseInt(WebUtil.decode(request.getParameter("id")));
+				IProblemService problemService = new ProblemServiceImpl();
 				ProblemWithClassification problemWithClassification = problemService.getProblemWithClassification(uid, pid);
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

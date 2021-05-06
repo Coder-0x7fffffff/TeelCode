@@ -57,12 +57,14 @@ public class GetProblemRecord extends HttpServlet {
 	        try {
 	        	int pid = Integer.parseInt(paramterMap.get("pid"));
 	        	String uid = paramterMap.get("uid");
+	        	int page = Integer.parseInt(paramterMap.get("page"));
+	        	int pageSize = Integer.parseInt(paramterMap.get("offset"));
 	        	IRecordService recordService = new RecordServiceImpl();
 	        	List<Record> recordList = null;
 	        	if (null == uid || uid.isEmpty()) {
-	        		recordList = recordService.getRecord(pid);
+	        		recordList = recordService.getRecord(pid, page, pageSize);
 	        	} else {
-	        		recordList = recordService.getRecord(pid, uid);
+	        		recordList = recordService.getRecord(pid, uid, page, pageSize);
 	        	}
 		        String json = JSON.toJSONString(recordList);
 		        response.setContentType("text/json; charset=utf-8");

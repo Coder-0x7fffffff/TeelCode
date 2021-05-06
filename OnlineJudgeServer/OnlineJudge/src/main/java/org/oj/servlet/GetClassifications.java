@@ -65,8 +65,8 @@ public class GetClassifications extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			IClassificationService classificationService = new ClassificationServiceImpl();
 			try {
+				IClassificationService classificationService = new ClassificationServiceImpl();
 				List<Classification> classificationList = classificationService.getClassifications();
 				response.setContentType("text/json; charset=utf-8");
 		        PrintWriter out = response.getWriter();

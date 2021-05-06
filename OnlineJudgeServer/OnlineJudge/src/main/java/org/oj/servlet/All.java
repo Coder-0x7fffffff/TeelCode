@@ -86,14 +86,14 @@ public class All extends HttpServlet {
 			token = parameterMap.get("token");
 		}
 		if (Global.verifyToken(token)) {
-			String uid = Global.getToken(token).uid;
-			int page = Integer.parseInt(parameterMap.get("page"));
-			int pageSize = Integer.parseInt(parameterMap.get("offset"));
-			int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
-			int classification = Integer.parseInt(parameterMap.get("class"));
-			int status = Integer.parseInt(parameterMap.get("status"));
-			IProblemService problemService = new ProblemServiceImpl();
 			try {
+				String uid = Global.getToken(token).uid;
+				int page = Integer.parseInt(parameterMap.get("page"));
+				int pageSize = Integer.parseInt(parameterMap.get("offset"));
+				int difficulty = Integer.parseInt(parameterMap.get("difficulty"));
+				int classification = Integer.parseInt(parameterMap.get("class"));
+				int status = Integer.parseInt(parameterMap.get("status"));
+				IProblemService problemService = new ProblemServiceImpl();
 				List<ProblemWithClassification> problemWithClassificationList = problemService.all(
 						uid, page, pageSize, difficulty, classification, status);
 				response.setContentType("text/json; charset=utf-8");

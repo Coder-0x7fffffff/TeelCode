@@ -1,20 +1,18 @@
 package org.oj.entity;
 
-import java.sql.Date;
-
 public class Record {
 
 	private int pid;
 	private String uid;
 	private int pstate;
-	private java.sql.Date rtime;
+	private java.sql.Timestamp rtime;
 	private int rtimewaste;
 	private int rmemory;
 	private String rcode;
 	private int rcodetype;
 	private String rinfo;
 	
-	public Record(int pid, String uid, int pstate, Date rtime, int rtimewaste, int rmemory, String rcode, int rcodetype,
+	public Record(int pid, String uid, int pstate, java.sql.Timestamp rtime, int rtimewaste, int rmemory, String rcode, int rcodetype,
 			String rinfo) {
 		super();
 		this.pid = pid;
@@ -38,54 +36,71 @@ public class Record {
 	public int getPid() {
 		return pid;
 	}
+	
 	public void setPid(int pid) {
 		this.pid = pid;
 	}
+	
 	public String getUid() {
 		return uid;
 	}
+	
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+	
 	public int getPstate() {
 		return pstate;
 	}
+	
 	public void setPstate(int pstate) {
 		this.pstate = pstate;
 	}
-	public java.sql.Date getRtime() {
+	
+	public java.sql.Timestamp getRtime() {
 		return rtime;
 	}
-	public void setRtime(java.sql.Date rtime) {
+	
+	public void setRtime(java.sql.Timestamp rtime) {
 		this.rtime = rtime;
 	}
+	
 	public int getRtimewaste() {
 		return rtimewaste;
 	}
+	
 	public void setRtimewaste(int rtimewaste) {
 		this.rtimewaste = rtimewaste;
 	}
+	
 	public int getRmemory() {
 		return rmemory;
 	}
+	
 	public void setRmemory(int rmemory) {
 		this.rmemory = rmemory;
 	}
+	
 	public String getRcode() {
 		return rcode;
 	}
+	
 	public void setRcode(String rcode) {
 		this.rcode = rcode;
 	}
+	
 	public int getRcodetype() {
 		return rcodetype;
 	}
+	
 	public void setRcodetype(int rcodetype) {
 		this.rcodetype = rcodetype;
 	}
+	
 	public String getRinfo() {
 		return rinfo;
 	}
+	
 	public void setRinfo(String rinfo) {
 		this.rinfo = rinfo;
 	}

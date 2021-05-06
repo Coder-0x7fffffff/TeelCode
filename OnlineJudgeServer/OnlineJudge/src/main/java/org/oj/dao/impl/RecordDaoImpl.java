@@ -20,7 +20,7 @@ public class RecordDaoImpl implements IRecordDao {
 				int pid = resultSet.getInt(1);
 				String uid = resultSet.getString(2);
 				int pstate = resultSet.getInt(3);
-				java.sql.Date time = resultSet.getDate(4);
+				java.sql.Timestamp time = resultSet.getTimestamp(4);
 				int timeUsage = resultSet.getInt(5);
 				int memUsage = resultSet.getInt(6);
 				String code = resultSet.getString(7);
@@ -37,18 +37,48 @@ public class RecordDaoImpl implements IRecordDao {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Record> findRecord(int pid) throws SQLException {
-		String sql = "SELECT * FROM Record WHERE p_id=?";
-		Object[] params = { pid };
+	public List<Record> findRecord(int pid, int page, int pageSize) throws SQLException {
+		String sql = "SELECT * FROM Record WHERE p_id=? LIMIT ?, ?";
+		Object[] params = { pid, (page - 1) * pageSize, pageSize };
 		return (List<Record>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Record> findRecord(int pid, String uid) throws SQLException {
-		String sql = "SELECT * FROM Record WHERE p_id=? AND u_id=?";
-		Object[] params = { pid, uid };
+	public List<Record> findRecord(int pid, String uid, int page, int pageSize) throws SQLException {
+		String sql = "SELECT * FROM Record WHERE p_id=? AND u_id=? LIMIT ?, ?";
+		Object[] params = { pid, uid, (page - 1) * pageSize, pageSize };
 		return (List<Record>) DBUtil.query(sql, params, SELECT_RESULT_HANDLER);
+	}
+	
+	@Override
+	public int getRecordCount(int pid) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Record WHERE p_id=?";
+		Object[] params = { pid };
+		return (int) DBUtil.query(sql, params, new ResultHandler() {
+			@Override
+			public Object handle(ResultSet resultSet) throws SQLException {
+				while (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+				return 0;
+			}
+		});
+	}
+	
+	@Override
+	public int getRecordCount(int pid, String uid) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Record WHERE p_id=? AND u_id=?";
+		Object[] params = { pid, uid };
+		return (int) DBUtil.query(sql, params, new ResultHandler() {
+			@Override
+			public Object handle(ResultSet resultSet) throws SQLException {
+				while (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+				return 0;
+			}
+		});
 	}
 	
 	@Override
