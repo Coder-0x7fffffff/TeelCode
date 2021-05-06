@@ -97,7 +97,7 @@ class Model{
                 document.getElementById("detail_detail").innerHTML = '' +
                     '<table id="question_table" class="question_table">\n' +
                     '    <tr class="table_title">\n' +
-                    '        <th class="table_head">编号</th>\n' +
+                    '        <th class="table_head">题目编号</th>\n' +
                     '        <th class="table_head text_align_left">题目</th>\n' +
                     '        <th class="table_head">状态</th>\n' +
                     '    </tr>\n' +
@@ -352,7 +352,7 @@ class Model{
             this.#page2 = 1
         }
         let ret = postAndWait("/getSubmits",{page:this.#page2,offset:10,uid:getCookie("id")})
-        let problems = ret["result"]
+        let problems = ret["result"]["record"]
         for(let i=0;i<problems.length;i++){
             let row = table.insertRow()
             if(i%2===0)
@@ -365,7 +365,7 @@ class Model{
             cell.innerText=problems[i]['pname'].toString()
             cell = row.insertCell()
             cell.style.cssText = "text-align: center"
-            cell.innerText=problems[i]['pstate'].toString()
+            cell.innerText=problems[i]['pstate']===1?"通过":"未通过"
         }
         this.#page2++
     }

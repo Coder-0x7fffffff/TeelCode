@@ -1,3 +1,4 @@
+const {getPageFrame} = require("./PageConstructor");
 const {httpRequest} = require("./ServerUtil");
 
 let OJServer = "http://localhost:8080/OnlineJudge/"
@@ -257,7 +258,9 @@ function run(req, res){
     }
     let input = body['input']
     let requestData = {token:req.cookies['token'], code:code, language:language, input:input}
+    console.log(requestData)
     httpRequest(OJServer+"ExecuteCode","POST",requestData).then(function (r){
+        console.log(r)
         res.send({err:null,result:r})
     })
 }
@@ -288,7 +291,9 @@ function submit(req, res){
     }
     let time = body['time']
     let requestData = {token:req.cookies['token'], id:id,code:code,language:language,time: time}
+    console.log(requestData)
     httpRequest(OJServer+"Submit","POST",requestData).then(function (r){
+        console.log(r)
         res.send({err:null,result:r})
     })
 }
@@ -450,7 +455,7 @@ function deleteProblem(req, res){
 
 function getSubmits(req, res){
     let body = req.body
-    let requestData = {token:req.cookies['token'], uid: body['uid'], page:body['page'], offset:body['offset']}
+    let requestData = {token:req.cookies['token'], id: body['uid'], page:body['page'], offset:body['offset']}
     httpRequest(OJServer + "GetUserRecord", "POST", requestData).then(function (r){
         res.send({err:null,result:r})
     })
