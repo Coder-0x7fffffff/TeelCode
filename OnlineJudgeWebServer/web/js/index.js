@@ -22,9 +22,12 @@ class IndexWebModel {
             let pdiffi = this.#difficulty[problems[problem]["problem"]["pdifficulty"]]["name"]
             let prate = (Math.floor(parseInt(problems[problem]["problem"]["ppass"])/parseInt(problems[problem]["problem"]["psubmit"]) * 10000)/100).toString()
             let pstatus = "未提交"
-            switch(problems[problem]["passed"] === 0){
-                 default:
-                    pstatus = "未完成"
+            switch(problems[problem]["passed"]){
+                default:
+                    pstatus = "未提交"
+                    break
+                case 0:
+                    pstatus = "未通过"
                     break
                 case 1:
                     pstatus = "完成"

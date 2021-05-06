@@ -258,9 +258,7 @@ function run(req, res){
     }
     let input = body['input']
     let requestData = {token:req.cookies['token'], code:code, language:language, input:input}
-    console.log(requestData)
     httpRequest(OJServer+"ExecuteCode","POST",requestData).then(function (r){
-        console.log(r)
         res.send({err:null,result:r})
     })
 }
